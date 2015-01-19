@@ -18,15 +18,22 @@ int button1 = 5;
 int button2 = 4;
 int button3 = 3;
 int button4 = 2;
+int ledPin = 13;
+int buzzerPin = 6;
 
 
 void setup() {
-  lcd.begin(16, 2);//configureer lcd als 2 rijen met ieder 16 vakken
+
+  Serial.begin(9600);
   
+  lcd.begin(16, 2);//configureer lcd als 2 rijen met ieder 16 vakken
   pinMode(button1, INPUT);
   pinMode(button2, INPUT);
   pinMode(button3, INPUT);
   pinMode(button4, INPUT);
+  pinMode(ledPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  
 }
 
 

@@ -21,12 +21,16 @@ int button4 = 2;
 
 
 void setup() {
+  
+  Serial.begin(9600);
+  
   lcd.begin(16, 2);//configureer lcd als 2 rijen met ieder 16 vakken
   
   pinMode(button1, INPUT);
   pinMode(button2, INPUT);
   pinMode(button3, INPUT);
   pinMode(button4, INPUT);
+  
 }
 
 
