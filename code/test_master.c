@@ -1,31 +1,34 @@
 // verstuur vraag nummer naar slaves:
 http://arduino.cc/en/Tutorial/MasterWriter
 
-
+#include <Wire.h>
 
 // ------------ master code: --------------------------------------------------------------------
 
 void setup () {
 	wire.begin(); // join i2c bus (address optional for master)
+	
+	byte scoreArray[3] = {0, 0, 0};
+	byte questionIndex = 2;
+	byte rondeNummer = 4;
+	byte maxRondes = 20;
+	byte spelStatus = 1;
 }
 
 void loop () {
-	int questionIndex = 2;
-	char[16] tussenstand = "1:00  2:00  3:00"
-	char[5] spelStatus = "true "
-	
 	transmitQuestion(questionIndex);
-	transmitRound(5, 20);
-	
-	transmitScore(tussenstand);
+	transmitRound(rondeNummer, maxRondes);
+	transmitScore(scoreArray);
 	transmitGameStatus(spelStatus);
-
+	delay(10000);
 }
+
 
 void transmitQuestion(int questionIndex) { //stuurt vraag nummer naar slaves
 	for (int x = 2, x < 5, x++) {
 		wire.beginTransmission(x); // transmit to device #x
-		wire.write(questionIndex); // send 2 bytes (integer)
+		wire.write(1); //geeft aan dat het om de vraag gaat (1)
+		wire.write(questionIndex); // send 1 bytes (vraag nummer)
 		wire.endTransmission(); // stop transmitting
 	}
 }
@@ -33,22 +36,28 @@ void transmitQuestion(int questionIndex) { //stuurt vraag nummer naar slaves
 void transmitRound(int rondeNummer, int maxRondes) { //stuurt ronde nummer en max aantal rondes naar slaves
 	for (int x = 2, x < 5, x++) {
 		wire.beginTransmission(x); // transmit to device #x
-		wire.write(rondeNummer); // send 2 bytes (integer)
-		wire.write(maxRondes); // send 2 bytes (integer)
+		wire.write(2); //geeft aan dat het om de ronde info gaat (2)
+		wire.write(rondeNummer); // send 1 bytes (huidige ronde nummer)
+		wire.write(maxRondes); // send 1 bytes (maximum aantal rondes)
 		wire.endTransmission(); // stop transmitting
 	}
 }
 
+/*
 void getAntwoorden() { //vraagt slaves om antwoorden op meerkeuze vraag
+//request eerst
 }
 
 void getReactietijden() { //vraagt slaves om reactietijden bij buzzer vraag
+//request eerst
 }
+*/
 
-void transmitScore(char[16] tussenstand;) { //stuurt nieuwe tussenstand naar slaves
+void transmitScore(int *scoreArray) { //stuurt score array naar slaves
 	for (int x = 2, x < 5, x++) {
 		wire.beginTransmission(x); // transmit to device #x
-		wire.write(tussenstand); // send 16 bytes (16 character string)
+		wire.write(5); //geeft aan dat het om de score gaat (5)
+		wire.write(scoreArray, 3); // send score array (3 bytes)
 		wire.endTransmission(); // stop transmitting
 	}
 }
@@ -56,35 +65,11 @@ void transmitScore(char[16] tussenstand;) { //stuurt nieuwe tussenstand naar sla
 void transmitGameStatus(char[5] spelStatus) { //stuurt spel status naar slaves (true of false, volgende ronde of spel afgelopen?)
 	for (int x = 2, x < 5, x++) {
 		wire.beginTransmission(x); // transmit to device #x
-		wire.write(spelStatus); // send 5 bytes (5 character string) ("true " of "false"
+		wire.write(6); //geeft aan dat het om de spelstatus gaat (6)
+		wire.write(spelStatus); // send 1 bytes (0 of 1)
 		wire.endTransmission(); // stop transmitting
 	}
 }
 
 
 
-
-
-
-// ----------- slave code: ------------------------------------------------------------
-
-
-
-void setup()-
-{
-	Serial.begin(9600);
-	Wire.begin(2);                // join i2c bus with address #2
-	Wire.onReceive(ontvanger); // register event
-}
-
-void loop()
-{
-}
-
-// function that executes whenever data is received from master
-// this function is registered as an event, see setup()
-void ontvanger(int numBytes)
-{
-  int questionIndex = Wire.read();   // receive byte as an integer
-  Serial.println(questionIndex);         // print the integer
-}
