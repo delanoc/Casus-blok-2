@@ -7,7 +7,7 @@
 
 void setup () {
   Serial.begin(9600);
-  Serial.print("initialized");
+  Serial.print("nitialized");
   Wire.begin(); // join i2c bus (address optional for master)
 }
 
