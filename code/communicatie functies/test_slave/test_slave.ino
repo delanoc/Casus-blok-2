@@ -12,13 +12,19 @@ int maxRondes;
 int scoreArray(3);
 int spelStatus;
 
+int gamemodeID = 1;
+
+char antwoord[] = "D";
+char reactietijd[] = "1740";
+
 void setup()
 {
 	Serial.begin(9600);
-	Serial.print("initilized");
+	Serial.print("initialized");
 
-	Wire.begin(2);             // join i2c bus with address #2
+	Wire.begin(3);             // join i2c bus with address #2
 	Wire.onReceive(ontvanger); // register event
+        Wire.onRequest(antwoorden);
 
         
         
@@ -26,7 +32,7 @@ void setup()
 
 void loop()
 {
-   delay(100); 
+   delay(100);
 }
 
 
@@ -75,4 +81,18 @@ void ontvanger(int numBytes)
 		Serial.println("\n spelstatus: "); Serial.println(spelStatus);
 	}
 
+}
+
+
+void antwoorden()
+{
+    //gamemodeID, 1= meerkeuze, 0=buzzer, moet zelfde zijn als master code
+
+    if (gamemodeID == 1) { //in geval van meerkeuze:
+      Wire.write(antwoord);
+    }
+    else if (gamemodeID == 0) { //in geval van buzzer:
+      Wire.write(reactietijd);
+    }
+    
 }
