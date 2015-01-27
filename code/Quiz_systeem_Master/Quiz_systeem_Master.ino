@@ -3,7 +3,7 @@
 	Studentnummers:	1306669corvers, 1163981kooij, 1331833kerkhofs, 1309730heutmekers
 	Klas:			IT1
 	Module:			PIT2 (2014-2015)
-	Versie:			1.25
+	Versie:			1.27
 	Inleverdatum:	2 februari 2015
 */
 
@@ -11,9 +11,10 @@
 #include <LiquidCrystal.h> // LCD Library
 #include <Wire.h> // Transmission library
 #include <string.h>
+#include <avr/pgmspace.h> // Progmem library
 
 // ---------- Constants
-#define VERSION		1.25 // Based on month.day
+#define VERSION		1.27 // Based on month.day
 
 // Buttons
 #define btnPrev		5 // Previous button for the lcd menu
@@ -21,28 +22,82 @@
 #define btnSelect	3 // Select button for the lcd menu
 #define btnToggle	2 // Toggle button for the score
 
+// Misc
+#define MAX_PARTICIPANTS 3
+
+// Questions saved in PROGMEM
+prog_char q1[] PROGMEM = "Wat is de hoofdstad van Nederland?";
+prog_char q2[] PROGMEM = "Hoeveel vestigingen heeft Zuyd Hogeschool?";
+prog_char q3[] PROGMEM = "Wat is de naam van de volgende Koning(in) van Nederland?";
+prog_char q4[] PROGMEM = "Hoe heette de man van prinses Beatrix?";
+prog_char q5[] PROGMEM = "Heeft WhatsApp Facebook overgekocht?";
+prog_char q6[] PROGMEM = "Mag men met een autorijbewijs ook een scooter besturen?";
+prog_char q7[] PROGMEM = "Welk bedrijf gebruikte als eerste een GUI?";
+prog_char q8[] PROGMEM = "Welke acteur speelt de rol van Harry Potter?";
+prog_char q9[] PROGMEM = "Bij welke sport spelen zowel mannen als vrouwen in één team?";
+prog_char q10[] PROGMEM = "In welk jaar vond de laatste Elfstedentoch plaats?";
+prog_char q11[] PROGMEM = "Hoeveel kegels moet men omwerpen bij bowlen?";
+prog_char q12[] PROGMEM = "Hoeveel bollen telt het Atomium?";
+prog_char q13[] PROGMEM = "Hoeveel rozijnen zitten in twee dozijnen?";
+prog_char q14[] PROGMEM = "Hoeveel magen heeft een koe?";
+prog_char q15[] PROGMEM = "Welke kleur had de originele Cola?";
+prog_char q16[] PROGMEM = "Uit hoeveel hokjes bestaat een sudokuspel?";
+prog_char q17[] PROGMEM = "Met welk toestel meet men aardbevingen?";
+prog_char q18[] PROGMEM = "Wie speelt de hoofdrol in 'The Hunger Games'?";
+prog_char q19[] PROGMEM = "Voor wat is Phasmaphobia de vrees?";
+prog_char q20[] PROGMEM = "Volgens een oud gezegde leiden alle wegen tot een hoofdstad, welke?";
+prog_char q21[] PROGMEM = "Hoe heet een bril zonder glazen?";
+prog_char q22[] PROGMEM = "Wat betekent de afkorting GUI?";
+prog_char q23[] PROGMEM = "Waarvoor staat de afkorting SQL?";
+prog_char q24[] PROGMEM = "Met welke techniek wint men direct bij judo?";
+prog_char q25[] PROGMEM = "Welke Britse zangeres had een hit in 2006 met `Rehab’?";
+prog_char q26[] PROGMEM = "Als u een `chalkie` in Australië was, wat zou uw beroep zijn?";
+prog_char q27[] PROGMEM = "Wat is de eerste letter  van het Griekse alfabet?";
+prog_char q28[] PROGMEM = "Welke kleur bevindt zich aan de top van een regenboog?";
+prog_char q29[] PROGMEM = "Wat zijn de drie primaire kleuren van licht?";
+prog_char q30[] PROGMEM = "Welke organisatie is ook gekend als ‘De cosa nostra’?";
+prog_char q31[] PROGMEM = "Wat is de grootste zoekmachine op internet?";
+prog_char q32[] PROGMEM = "Welke kleur komt in vlaggen over de hele wereld het meeste  voor?";
+prog_char q33[] PROGMEM = "Uit welk land komt Tequila?";
+prog_char q34[] PROGMEM = "Wie was de oppergod in de Griekse mythologie?";
+prog_char q35[] PROGMEM = "Wat was Rocky`s achternaam in de boksfilm ‘Rocky’?";
+prog_char q36[] PROGMEM = "Wat is kleiner dan een molecuul?";
+prog_char q37[] PROGMEM = "Hoeveel magen heeft een vogel?";
+prog_char q38[] PROGMEM = "Hoeveel ogen heeft een honingbij?";
+prog_char q39[] PROGMEM = "Wat is het hoogste gras in de wereld?";
+prog_char q40[] PROGMEM = "Wat is het grootste landzoogdier in de wereld?";
+
+// Array pointer to flash stored question database
+PROGMEM const char* questions[40] = {   
+  q1, q2, q3, q4, q5, q6, q7, q8, q9, q10,
+  q11, q12, q13, q14, q15, q16, q17, q18, q19, q20,
+  q21, q22, q23, q24, q25, q26, q27, q28, q29, q30,
+  q31, q32, q33, q34, q35, q36, q37, q38, q39, q40
+};
+
+// Correct answers array for all questions
+const char* answers[40] = {"B", "C", "A", "C", "A", "A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
+	"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood", "Rood, Blauw en Groen",
+	"Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Olifant"};
+
+// Scores for the questions
+const byte scores[20] = {2, 8, 2, 4, 4, 4, 8, 2, 4, 8, 4, 8, 2, 2, 8, 4, 4, 2, 8, 4};
+
+// Buffer for reading promem to ram
+char buffer[70];
+
 // ---------- Variables
 // LCD Screen
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12); // LCD pins
 
 // Menu variable
 boolean browse = false;
-byte first; // Identifer to automatically start a menu or return to a menu from an interrupt
+boolean first; // Identifer to automatically start a menu or return to a menu from an interrupt
 byte state; // 0 = no toggle; 1 = qMenu; 2 = gmMenu; 3 = bMenu;
 
 // Identifier for the current question round
 byte gameRound;
 byte questionIndex;
-
-// Struct for buzzer questions
-struct buzzerQuestions {
-	int index;
-	char question[80];
-	char answer[24];
-	byte correctScore;
-	byte incorrectScore;
-};
-struct buzzerQuestions buzQ1;
 
 // Game and round variables
 byte maxQuestions; // Maximum amount of questions
@@ -55,7 +110,7 @@ byte scoreArray[3] = {0, 0, 0};
 // getResponse variables that hold the user's answers
 char multipleChoiceResponse[3]; // Save the user's input when the requested input is A, B, C or D
 int responseTime[3]; // Storage the response time of each user
-byte participant = 1; // The index of the winner of the current round (based on the fastest buzzer response)
+byte participant; // The index of the winner of the current round (based on the fastest buzzer response)
 
 void setup() {
 	// Inputs
@@ -70,11 +125,11 @@ void setup() {
 	lcd.begin(16, 2); lcd.clear(); // 16 columns, 2 rows
 	
 	// Startup message
-	lcd.setCursor(0, 0); // Set the cursor to the first column and the first row
+	lcd.setCursor(2, 0); // Set the cursor to the third column and the first row
 	lcd.print("Quiz systeem");
-	lcd.setCursor(0, 1); // Set the cursor to the first column and the second row
+	lcd.setCursor(2, 1); // Set the cursor to the first column and the second row
 	lcd.print("Versie:");
-	lcd.setCursor(8, 1); // Set the cursor to the ninth column and the first row
+	lcd.setCursor(10, 1); // Set the cursor to the ninth column and the first row
 	lcd.print(VERSION);
 	
 	delay(2000); // Delay to keep the welcome message on the LCD screen a little bit longer
@@ -107,31 +162,25 @@ void loop() {
 	lcd.clear();
 	transmitRoundMax(maxQuestions); delay(100); // Send the maximum amount of questions to the slave arduinos
 	
-	// buzzerQuestion1 specification
-	buzQ1.index = 0;
-	strcpy(buzQ1.question, "Wat is de hoofdstad van Nederland?");
-	strcpy(buzQ1.answer, "Amsterdam");
-	buzQ1.correctScore = 4;
-	buzQ1.incorrectScore = -2;
-	
 	for (gameRound = 1; gameRound <= maxQuestions; gameRound++) {
 		gmMenu(); lcd.clear(); state = 0; // Choose gamemode per round
+		transmitRoundNum(gameRound); delay(100); // Transmit the round number to slave arduinos
 		displayRoundNum(gameRound); delay(1750); // Display the current question relative to the total amount of questions
 		
 		// Load the requested gamemode
 		switch(gamemodeID) {
-			case 0: buzzerQuestion(); // Buzzer question		
-			//case 1:  // Multiple choice question
+			case 0: buzzerQuestion(); break; // Buzzer question		
+			case 1: multipleChoiceQuestion(); break; // Multiple choice question
 		}
 		
 		// Tell participants if there is another question in the game or not
 		if (gameRound != maxQuestions) transmitGameState(1); // There is a question left
 		else transmitGameState(0); // There are no more questions
+		
+		gameRound++;
 	}
 	
-	// Show the quizmaster, which participant had the highest score and won
-	//gameWinner(); // Get the highest score in the scoreArray
-	
+	// Show the quizmaster, which participant had the highest score and won	
 	lcd.clear();
 	lcd.setCursor(0, 0);
 	lcd.print("Spel winnaar:");
@@ -159,7 +208,7 @@ void displayMaxQuestions(int amount) {
 			select = true; // Stop asking the user to enter the button to select an amount
 			browse = true; // End the main menu cycle loop
 		}
-		else if ((digitalRead(btnPrev) == HIGH) || (digitalRead(btnNext) == HIGH) || (first == 1)) select = true;
+		else if ((digitalRead(btnPrev) == HIGH) || (digitalRead(btnNext) == HIGH) || (first == true)) select = true;
 	}
 }
 
@@ -183,18 +232,21 @@ void buzzerCheck(int correctAnswer) {
 		if (digitalRead(btnSelect) == HIGH) {
 			switch(correctAnswer) {
 				case 0: {
-					scoreArray[participant] += buzQ1.incorrectScore;
+					if (scoreArray[participant] == 0) scoreArray[participant] = 0;
+					else scoreArray[participant] -= 2;
 					break;
 				}
 				case 1: {
-					scoreArray[participant] += buzQ1.correctScore;
+					for (int i = 0; i < MAX_PARTICIPANTS; i++) {
+						scoreArray[participant] += scores[questionIndex];
+					}
 					break;
 				}
 			}	
 			select = true; // Stop asking the user to enter the button to select an amount
 			browse = true; // End the main menu cycle loop
 		}
-		else if ((digitalRead(btnPrev) == HIGH) || (digitalRead(btnNext) == HIGH) || (first == 1)) select = true;
+		else if ((digitalRead(btnPrev) == HIGH) || (digitalRead(btnNext) == HIGH) || (first == true)) select = true;
 	}
 }
 
@@ -220,7 +272,7 @@ void gamemode(int identifier) {
 			select = true; // Stop asking the user to enter the button to select an amount
 			browse = true; // End the main menu cycle loop
 		}
-		else if ((digitalRead(btnPrev) == HIGH) || (digitalRead(btnNext) == HIGH) || (first == 1)) select = true;
+		else if ((digitalRead(btnPrev) == HIGH) || (digitalRead(btnNext) == HIGH) || (first == true)) select = true;
 	}
 }
 
@@ -228,12 +280,12 @@ void gamemode(int identifier) {
 void qMenu() {
 	state = 1; // Set the current state to 1
 	byte item = 0; // Byte to select what amount will be handled (Max value is 3)
-	first = 1; // Byte to determine if the menu is going through its first run (this is used to make sure the menu opens, without pressing a button first)
+	first = true; // Byte to determine if the menu is going through its first run (this is used to make sure the menu opens, without pressing a button first)
 	
 	while (!browse) {
 		// If the previous button is pressed or it is the first run through
-		if ((digitalRead(btnPrev) == HIGH) || (first == 1)) {
-			first = 0; // First run through has ended
+		if ((digitalRead(btnPrev) == HIGH) || (first == true)) {
+			first = false; // First run through has ended
 			if (item < 1) item = 0; // Incase item is larger than 3 (there are 4 amount choices), reset the counter to 0 (going back to the first amount chocie)
 			else item--;
 			
@@ -262,12 +314,12 @@ void qMenu() {
 // Function to determine the gamemode
 void gmMenu() {
 	state = 2; // Set the toggle state to 2
-	first = 1; // Byte to determine if the menu is going through its first run (this is used to make sure the menu opens, without pressing a button first)
+	first = true; // Byte to determine if the menu is going through its first run (this is used to make sure the menu opens, without pressing a button first)
 	
 	while (!browse) {
 		// If the previous button is pressed or it is the first run through
-		if ((digitalRead(btnPrev) == HIGH) || (first == 1)) {
-			first = 0; // First run through has ended
+		if ((digitalRead(btnPrev) == HIGH) || (first == true)) {
+			first = false; // First run through has ended
 			gamemode(0);
 		}
 		else if (digitalRead(btnNext) == HIGH) gamemode(1);
@@ -281,12 +333,12 @@ void gmMenu() {
 void bMenu() {
 	state = 3; // Set the toggle state to 3
 	byte item = 0; // Byte to select what amount will be handled (Max value is 3)
-	first = 1; // Byte to determine if the menu is going through its first run (this is used to make sure the menu opens, without pressing a button first)
+	first = true; // Byte to determine if the menu is going through its first run (this is used to make sure the menu opens, without pressing a button first)
 	
 	while (!browse) {
 		// If the previous button is pressed or it is the first run through
-		if ((digitalRead(btnPrev) == HIGH) || (first == 1)) {
-			first = 0; // First run through has ended
+		if ((digitalRead(btnPrev) == HIGH) || (first == true)) {
+			first = false; // First run through has ended
 			buzzerCheck(0);
 		}
 		else if (digitalRead(btnNext) == HIGH) buzzerCheck(1);
@@ -311,39 +363,66 @@ void displayRoundNum(int currentQuestion) {
 
 // Function to execute the buzzer gamemode
 void buzzerQuestion() {
-	questionIndex = random(0, 20); // Get a random number to use as an index in the question and score array
-	transmitRoundNum(gameRound); delay(100); // Transmit the round number to slave arduinos
+	questionIndex = random(20, 39); // Get a random number to use as an index in the question and score array
+	strcpy_P(buffer, (char*)pgm_read_word(&(questions[questionIndex])));
 	
-	displayQuestion(); // Display the question and transmit the questionIndex
+	//questionIndex = 0; // TESTING PURPOSES
+	
+	displayQuestion(buffer); // Display the question and transmit the questionIndex
 	
 	// Display correct answer
 	lcd.clear();
 	lcd.setCursor(0, 0);
 	lcd.print("Juist antwoord:");
 	lcd.setCursor(0, 1);
-	lcd.print(buzQ1.answer);
+	lcd.print(answers[questionIndex]);
 	
 	delay(3500);
 	
-	//handleResponse(0); // Request user input for buzzer gamemode
+	handleResponse(0); // Request user input for buzzer gamemode
 	
 	bMenu();
+	displayScores(); // Print the scores for each player
+	delay(1500);
+	lcd.clear();
+}
+
+// Function to execute the multiple choice gamemode
+void multipleChoiceQuestion() {
+	questionIndex = random(0, 19); // Get a random number to use as an index in the question and score array
+	strcpy_P(buffer, (char*)pgm_read_word(&(questions[questionIndex])));
+	
+	//questionIndex = 0; // TESTING PURPOSES
+	
+	displayQuestion(buffer); // Display the question and transmit the questionIndex
+	
+	handleResponse(1); // Request user input for buzzer gamemode
+	
+	// Give points to all players with correct answers
+	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
+		if (multipleChoiceResponse[i] == answers[questionIndex][0]) {
+			scoreArray[i] += scores[questionIndex];
+		}
+	}
+	
+	displayScores(); // Print the scores for each player
+	delay(1500);
 	lcd.clear();
 }
 
 // Function to get the round winner based on the highest score
 byte gameWinner() {
 	byte array[3];
-	for (int i = 0; i < 3; i++) { 
+	for (int i = 0; i < MAX_PARTICIPANTS; i++) { 
 		array[i] = scoreArray[i]; // Add index value of mainArray into a tempArray in the same index
 	}
 	
 	byte max = 0;
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
 		if (array[i] > max) max = array[i]; // If array index is larger than 0, max gets that value
 	}
 	
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
 		if (scoreArray[i] == max) return i + 1; // If any number in the score array is equal to max, return that participant + 1 -> Index starts at 0, playerids at 1
 	}
 }
@@ -351,30 +430,32 @@ byte gameWinner() {
 // Function to get the lowest response time
 void fastestResponse() {
 	byte array[3];
-	for (int i = 0; i < 3; i++) { 
+	for (int i = 0; i < MAX_PARTICIPANTS; i++) { 
 		array[i] = responseTime[i]; // Add index value of mainArray into a tempArray in the same index
 	}
 	
 	byte min = 11;
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
 		if (array[i] < min) min = array[i]; // If array index is smaller than 11, min gets that value
 	}
 	
-	for (int i = 0; i < 3; i++) {
-		if (responseTime[i] == min) participant = i; // If any number in the score array is equal to min, assign that number to participant
+	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
+		if (responseTime[i] == min) {
+			participant = i; // If any number in the score array is equal to min, assign that number to participant
+			transmitBuzzerState();
+		}
 	}
 }
 
 // Function that displays the question on LCD and transmits the questionIndex to slaves
-void displayQuestion() {
+void displayQuestion(String question) {
 	lcd.clear();
-	lcd.setCursor(2, 0);
-	lcd.print(buzQ1.question);
+	lcd.setCursor(0, 0);
+	lcd.print(question);
 	
 	transmitQuestion(questionIndex); delay(100); // Send the questionIndex to the slaves (so they know what the response options are)
-	// START INTERRUPT FOR GET ANSWERS
 	
-	for (int i = 0; i < 64; i++) {
+	for (int i = 0; i < 32; i++) {
 		// Scroll one position left
 		lcd.scrollDisplayLeft();
 		delay(300);
@@ -386,33 +467,35 @@ void toggleScore() {
 	if (digitalRead(btnToggle) == HIGH) {
 		if ((state == 1) || (state == 2) || (state == 3)) {
 			lcd.clear();
-			// Row 1 -> playerid
-			lcd.setCursor(0, 0);
-			lcd.print("D:");
-			lcd.setCursor(4, 0);
-			lcd.print("1");
-			lcd.setCursor(8, 0);
-			lcd.print("2");
-			lcd.setCursor(12, 0);
-			lcd.print("3");
-			// Row 2 -> score points
-			lcd.setCursor(0, 1);
-			lcd.print("S:");
-			lcd.setCursor(4, 1);
-			lcd.print(scoreArray[0]);
-			lcd.setCursor(8, 1);
-			lcd.print(scoreArray[1]);
-			lcd.setCursor(12, 1);
-			lcd.print(scoreArray[2]);
+			displayScores(); // Print the scores to the screen
 		}
 	}
 	else if (digitalRead(btnToggle) == LOW) {
-		switch(state) {
-			case 1: lcd.clear(); first = 1; break; // qMenu()
-			case 2: lcd.clear(); first = 1; break; // gmMenu()
-			case 3: lcd.clear(); first = 1; break; // bMenu()
-		}
+		if ((state == 1) || (state == 2) || (state == 3)) lcd.clear(); first = true;
 	}
+}
+
+// Function to print the scores of each user to the screen
+void displayScores() {
+	lcd.clear();
+	// Row 1 -> playerid
+	lcd.setCursor(0, 0);
+	lcd.print("D:");
+	lcd.setCursor(4, 0);
+	lcd.print("1");
+	lcd.setCursor(8, 0);
+	lcd.print("2");
+	lcd.setCursor(12, 0);
+	lcd.print("3");
+	// Row 2 -> score points
+	lcd.setCursor(0, 1);
+	lcd.print("S:");
+	lcd.setCursor(4, 1);
+	lcd.print(scoreArray[0]);
+	lcd.setCursor(8, 1);
+	lcd.print(scoreArray[1]);
+	lcd.setCursor(12, 1);
+	lcd.print(scoreArray[2]);
 }
 
 // Function that sends the question index to slaves
@@ -463,6 +546,13 @@ void transmitGameState(byte state) {
 	  Wire.write(state);
   	  Wire.endTransmission();
 	}
+}
+
+// Function that sends the game state to slaves (true or false -> next round or game ended)
+void transmitBuzzerState() {
+	Wire.beginTransmission(participant); // Transmit to device #x
+	Wire.write(6); // Identifer to tell the slave arduinos that the next byte is the fastest response
+  	Wire.endTransmission();
 }
 
 // Function that handles/requests the users input
