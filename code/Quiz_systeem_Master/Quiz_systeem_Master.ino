@@ -32,7 +32,7 @@ prog_char question2[] PROGMEM = "Hoeveel vestigingen heeft Zuyd?";
 prog_char question3[] PROGMEM = "Wat is de naam van de volgende Koningin?";
 prog_char question4[] PROGMEM = "Hoe heette de man van prinses Beatrix?";
 prog_char question5[] PROGMEM = "WhatsApp heeft Facebook overgekocht.";
-prog_char question6[] PROGMEM = "HBO-ICT bestaat uit 3 richtingen?";
+prog_char question6[] PROGMEM = "HBO-ICT bestaat uit 4 richtingen";
 prog_char question7[] PROGMEM = "Wie gebruikte als eerste een GUI?";
 prog_char question8[] PROGMEM = "Wie speelt de rol van Harry Potter?";
 prog_char question9[] PROGMEM = "Bij welke sport speelt men gemixt?";
@@ -79,7 +79,7 @@ PROGMEM const char* questions[40] = {
 };
 
 // Correct answers array for all questions
-const char* answers[40] = { "B", "C", "A", "C", "A", "A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
+const char* answers[40] = { "B", "C", "A", "C", "A", "B", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
 	"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood",
 	"Rood, Geel en Blauw", "Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Blauwe Vinvis"};
 
