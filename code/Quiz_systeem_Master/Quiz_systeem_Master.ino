@@ -26,62 +26,64 @@
 #define MAX_PARTICIPANTS 3
 
 // Questions saved in PROGMEM
-prog_char q1[] PROGMEM = "Wat is de hoofdstad van Nederland?";
-prog_char q2[] PROGMEM = "Hoeveel vestigingen heeft Zuyd Hogeschool?";
-prog_char q3[] PROGMEM = "Wat is de naam van de volgende Koning(in) van Nederland?";
-prog_char q4[] PROGMEM = "Hoe heette de man van prinses Beatrix?";
-prog_char q5[] PROGMEM = "Heeft WhatsApp Facebook overgekocht?";
-prog_char q6[] PROGMEM = "Mag men met een autorijbewijs ook een scooter besturen?";
-prog_char q7[] PROGMEM = "Welk bedrijf gebruikte als eerste een GUI?";
-prog_char q8[] PROGMEM = "Welke acteur speelt de rol van Harry Potter?";
-prog_char q9[] PROGMEM = "Bij welke sport spelen zowel mannen als vrouwen in één team?";
-prog_char q10[] PROGMEM = "In welk jaar vond de laatste Elfstedentoch plaats?";
-prog_char q11[] PROGMEM = "Hoeveel kegels moet men omwerpen bij bowlen?";
-prog_char q12[] PROGMEM = "Hoeveel bollen telt het Atomium?";
-prog_char q13[] PROGMEM = "Hoeveel rozijnen zitten in twee dozijnen?";
-prog_char q14[] PROGMEM = "Hoeveel magen heeft een koe?";
-prog_char q15[] PROGMEM = "Welke kleur had de originele Cola?";
-prog_char q16[] PROGMEM = "Uit hoeveel hokjes bestaat een sudokuspel?";
-prog_char q17[] PROGMEM = "Met welk toestel meet men aardbevingen?";
-prog_char q18[] PROGMEM = "Wie speelt de hoofdrol in 'The Hunger Games'?";
-prog_char q19[] PROGMEM = "Voor wat is Phasmaphobia de vrees?";
-prog_char q20[] PROGMEM = "Volgens een oud gezegde leiden alle wegen tot een hoofdstad, welke?";
-prog_char q21[] PROGMEM = "Hoe heet een bril zonder glazen?";
-prog_char q22[] PROGMEM = "Wat betekent de afkorting GUI?";
-prog_char q23[] PROGMEM = "Waarvoor staat de afkorting SQL?";
-prog_char q24[] PROGMEM = "Met welke techniek wint men direct bij judo?";
-prog_char q25[] PROGMEM = "Welke Britse zangeres had een hit in 2006 met `Rehab’?";
-prog_char q26[] PROGMEM = "Als u een `chalkie` in Australië was, wat zou uw beroep zijn?";
-prog_char q27[] PROGMEM = "Wat is de eerste letter  van het Griekse alfabet?";
-prog_char q28[] PROGMEM = "Welke kleur bevindt zich aan de top van een regenboog?";
-prog_char q29[] PROGMEM = "Wat zijn de drie primaire kleuren van licht?";
-prog_char q30[] PROGMEM = "Welke organisatie is ook gekend als ‘De cosa nostra’?";
-prog_char q31[] PROGMEM = "Wat is de grootste zoekmachine op internet?";
-prog_char q32[] PROGMEM = "Welke kleur komt in vlaggen over de hele wereld het meeste  voor?";
-prog_char q33[] PROGMEM = "Uit welk land komt Tequila?";
-prog_char q34[] PROGMEM = "Wie was de oppergod in de Griekse mythologie?";
-prog_char q35[] PROGMEM = "Wat was Rocky`s achternaam in de boksfilm ‘Rocky’?";
-prog_char q36[] PROGMEM = "Wat is kleiner dan een molecuul?";
-prog_char q37[] PROGMEM = "Hoeveel magen heeft een vogel?";
-prog_char q38[] PROGMEM = "Hoeveel ogen heeft een honingbij?";
-prog_char q39[] PROGMEM = "Wat is het hoogste gras in de wereld?";
-prog_char q40[] PROGMEM = "Wat is het grootste landzoogdier in de wereld?";
+// Buzzer
+prog_char question1[] PROGMEM = "Hoe heet een bril zonder glazen?";
+prog_char question2[] PROGMEM = "Wat betekent de afkorting GUI?";
+prog_char question3[] PROGMEM = "Waarvoor staat de afkorting SQL?";
+prog_char question4[] PROGMEM = "Met welke techniek wint men direct bij judo?";
+prog_char question5[] PROGMEM = "Welke Britse zangeres had een hit in 2006 met `Rehab’?";
+prog_char question6[] PROGMEM = "Als u een `chalkie` in Australië was, wat zou uw beroep zijn?";
+prog_char question7[] PROGMEM = "Wat is de eerste letter  van het Griekse alfabet?";
+prog_char question8[] PROGMEM = "Welke kleur bevindt zich aan de top van een regenboog?";
+prog_char question9[] PROGMEM = "Wat zijn de drie primaire kleuren van licht?";
+prog_char question10[] PROGMEM = "Welke organisatie is ook gekend als ‘De cosa nostra’?";
+prog_char question11[] PROGMEM = "Wat is de grootste zoekmachine op internet?";
+prog_char question12[] PROGMEM = "Welke kleur komt in vlaggen over de hele wereld het meeste  voor?";
+prog_char question13[] PROGMEM = "Uit welk land komt Tequila?";
+prog_char question14[] PROGMEM = "Wie was de oppergod in de Griekse mythologie?";
+prog_char question15[] PROGMEM = "Wat was Rocky`s achternaam in de boksfilm ‘Rocky’?";
+prog_char question16[] PROGMEM = "Wat is kleiner dan een molecuul?";
+prog_char question17[] PROGMEM = "Hoeveel magen heeft een vogel?";
+prog_char question18[] PROGMEM = "Hoeveel ogen heeft een honingbij?";
+prog_char question19[] PROGMEM = "Wat is het hoogste gras in de wereld?";
+prog_char question20[] PROGMEM = "Wat is het grootste landzoogdier in de wereld?";
+// Multiple choice
+prog_char question21[] PROGMEM = "Wat is de hoofdstad van Nederland?";
+prog_char question22[] PROGMEM = "Hoeveel vestigingen heeft Zuyd Hogeschool?";
+prog_char question23[] PROGMEM = "Wat is de naam van de volgende Koning(in) van Nederland?";
+prog_char question24[] PROGMEM = "Hoe heette de man van prinses Beatrix?";
+prog_char question25[] PROGMEM = "Heeft WhatsApp Facebook overgekocht?";
+prog_char question26[] PROGMEM = "Mag men met een autorijbewijs ook een scooter besturen?";
+prog_char question27[] PROGMEM = "Welk bedrijf gebruikte als eerste een GUI?";
+prog_char question28[] PROGMEM = "Welke acteur speelt de rol van Harry Potter?";
+prog_char question29[] PROGMEM = "Bij welke sport spelen zowel mannen als vrouwen in één team?";
+prog_char question30[] PROGMEM = "In welk jaar vond de laatste Elfstedentoch plaats?";
+prog_char question31[] PROGMEM = "Hoeveel kegels moet men omwerpen bij bowlen?";
+prog_char question32[] PROGMEM = "Hoeveel bollen telt het Atomium?";
+prog_char question33[] PROGMEM = "Hoeveel rozijnen zitten in twee dozijnen?";
+prog_char question34[] PROGMEM = "Hoeveel magen heeft een koe?";
+prog_char question35[] PROGMEM = "Welke kleur had de originele Cola?";
+prog_char question36[] PROGMEM = "Uit hoeveel hokjes bestaat een sudokuspel?";
+prog_char question37[] PROGMEM = "Met welk toestel meet men aardbevingen?";
+prog_char question38[] PROGMEM = "Wie speelt de hoofdrol in 'The Hunger Games'?";
+prog_char question39[] PROGMEM = "Voor wat is Phasmaphobia de vrees?";
+prog_char question40[] PROGMEM = "Volgens een oud gezegde leiden alle wegen tot een hoofdstad, welke?";
 
 // Array pointer to flash stored question database
 PROGMEM const char* questions[40] = {   
-  q1, q2, q3, q4, q5, q6, q7, q8, q9, q10,
-  q11, q12, q13, q14, q15, q16, q17, q18, q19, q20,
-  q21, q22, q23, q24, q25, q26, q27, q28, q29, q30,
-  q31, q32, q33, q34, q35, q36, q37, q38, q39, q40
+  question1, question2, question3, question4, question5, question6, question7, question8, question9, question10,
+  question11, question12, question13, question14, question15, question16, question17, question18, question19, question20,
+  question21, question22, question23, question24, question25, question26, question27, question28, question29, question30,
+  question31, question32, question33, question34, question35, question36, question37, question38, question39, question40
 };
 
 // Correct answers array for all questions
-const char* answers[40] = {"B", "C", "A", "C", "A", "A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
-	"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood", "Rood, Blauw en Groen",
-	"Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Olifant"};
+const char* answers[40] = {"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood",
+	"Rood, Blauw en Groen", "Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Olifant", "B", "C", "A", "C", "A",
+	"A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D"};
 
 // Scores for the questions
-const byte scores[20] = {2, 8, 2, 4, 4, 4, 8, 2, 4, 8, 4, 8, 2, 2, 8, 4, 4, 2, 8, 4};
+const byte scores[20] = {2, 8, 2, 4, 4, 4, 8, 2, 4, 8, 4, 8, 2, 2, 8, 4, 4, 2, 8, 4}; // NEED 20 MORE SCORES
 
 // Buffer for reading promem to ram
 char buffer[70];
@@ -158,6 +160,8 @@ void loop() {
 		}
 	}
 	
+	Serial.println("DEBUG: The game has started");
+	
 	state = 0; // Disable toggle
 	lcd.clear();
 	transmitRoundMax(maxQuestions); delay(100); // Send the maximum amount of questions to the slave arduinos
@@ -176,8 +180,6 @@ void loop() {
 		// Tell participants if there is another question in the game or not
 		if (gameRound != maxQuestions) transmitGameState(1); // There is a question left
 		else transmitGameState(0); // There are no more questions
-		
-		gameRound++;
 	}
 	
 	// Show the quizmaster, which participant had the highest score and won	
@@ -237,9 +239,7 @@ void buzzerCheck(int correctAnswer) {
 					break;
 				}
 				case 1: {
-					for (int i = 0; i < MAX_PARTICIPANTS; i++) {
-						scoreArray[participant] += scores[questionIndex];
-					}
+					scoreArray[participant] += scores[questionIndex];
 					break;
 				}
 			}	
@@ -363,7 +363,9 @@ void displayRoundNum(int currentQuestion) {
 
 // Function to execute the buzzer gamemode
 void buzzerQuestion() {
-	questionIndex = random(20, 39); // Get a random number to use as an index in the question and score array
+	Serial.println("DEBUG: Buzzer gamemode has been selected");
+	
+	questionIndex = random(0, 19); // Get a random number to use as an index in the question and score array
 	strcpy_P(buffer, (char*)pgm_read_word(&(questions[questionIndex])));
 	
 	//questionIndex = 0; // TESTING PURPOSES
@@ -389,7 +391,9 @@ void buzzerQuestion() {
 
 // Function to execute the multiple choice gamemode
 void multipleChoiceQuestion() {
-	questionIndex = random(0, 19); // Get a random number to use as an index in the question and score array
+	Serial.println("DEBUG: Multiple choice gamemode has been selected");
+	
+	questionIndex = random(20, 39); // Get a random number to use as an index in the question and score array
 	strcpy_P(buffer, (char*)pgm_read_word(&(questions[questionIndex])));
 	
 	//questionIndex = 0; // TESTING PURPOSES
@@ -423,7 +427,7 @@ byte gameWinner() {
 	}
 	
 	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
-		if (scoreArray[i] == max) return i + 1; // If any number in the score array is equal to max, return that participant + 1 -> Index starts at 0, playerids at 1
+		if (scoreArray[i] == max) return i + 1; Serial.println("DEBUG: Game winner has been determined");// If any number in the score array is equal to max, return that participant + 1 -> Index starts at 0, playerids at 1
 	}
 }
 
@@ -443,6 +447,8 @@ void fastestResponse() {
 		if (responseTime[i] == min) {
 			participant = i; // If any number in the score array is equal to min, assign that number to participant
 			transmitBuzzerState();
+			
+			Serial.println("DEBUG: Fastest response has been detected.");
 		}
 	}
 }
@@ -452,6 +458,8 @@ void displayQuestion(String question) {
 	lcd.clear();
 	lcd.setCursor(0, 0);
 	lcd.print(question);
+	
+	Serial.print("Question is being displayed on the LCD");
 	
 	transmitQuestion(questionIndex); delay(100); // Send the questionIndex to the slaves (so they know what the response options are)
 	
@@ -468,6 +476,8 @@ void toggleScore() {
 		if ((state == 1) || (state == 2) || (state == 3)) {
 			lcd.clear();
 			displayScores(); // Print the scores to the screen
+			
+			Serial.println("DEBUG: Quizmaster toggled score");
 		}
 	}
 	else if (digitalRead(btnToggle) == LOW) {
@@ -505,6 +515,8 @@ void transmitQuestion(byte questionIndex) {
     Wire.write(1); // Identifer to tell the slave arduinos that the next byte is a question
     Wire.write(questionIndex); // Send the questionIndex (1 byte)
     Wire.endTransmission(); // Stop transmitting
+	
+	Serial.println("DEBUG: Question has been transmitted to a slave");
   }
 }
 
@@ -515,6 +527,8 @@ void transmitRoundNum(byte roundNumber) {
     Wire.write(2); // Identifer to tell the slave arduinos that the next byte is the round number
     Wire.write(roundNumber);
     Wire.endTransmission();
+	
+	Serial.println("DEBUG: Round number has been transmitted to a slave");
   }
 }
 
@@ -525,6 +539,8 @@ void transmitRoundMax(byte roundMax) {
     Wire.write(3); // Identifer to tell the slave arduinos that the next byte is the maximum amount of questions
     Wire.write(roundMax);
     Wire.endTransmission();
+	
+	Serial.println("DEBUG: Max amount of questions has been transmitted to a slave");
   }
 }
 
@@ -535,6 +551,8 @@ void transmitScore(byte *scoreArray) {
 	  Wire.write(4); // Identifer to tell the slave arduinos that the next byte is the score array
 	  Wire.write(scoreArray, 3);
 	  Wire.endTransmission();
+	  
+	  Serial.println("DEBUG: Scores have been transmitted to a slave");
 	}
 }
 
@@ -545,6 +563,8 @@ void transmitGameState(byte state) {
 	  Wire.write(5); // Identifer to tell the slave arduinos that the next byte is the game state
 	  Wire.write(state);
   	  Wire.endTransmission();
+	  
+	  Serial.println("DEBUG: Game state has been transmitted to a slave");
 	}
 }
 
@@ -553,6 +573,8 @@ void transmitBuzzerState() {
 	Wire.beginTransmission(participant); // Transmit to device #x
 	Wire.write(6); // Identifer to tell the slave arduinos that the next byte is the fastest response
   	Wire.endTransmission();
+	
+	Serial.println("DEBUG: Buzzer state has been transmitted to a slave");
 }
 
 // Function that handles/requests the users input
@@ -561,6 +583,8 @@ void handleResponse(byte gamemodeID) {
 		switch(gamemodeID) {
 			// Incase the gamemode is buzzer
 			case 0: {
+				Serial.println("DEBUG: Get slave response to buzzer question");
+				
 				char inputPlayer[4]; // Temporary store the quested user input in a string of 4 characters
 				int time = 0; // Storage user response time as an integer
         
@@ -592,6 +616,8 @@ void handleResponse(byte gamemodeID) {
 			
 			// Incase the gamemode is multiple choice
 			case 1: {
+				Serial.println("DEBUG: Get slave response to multiple choice question");
+				
 				switch(device) {
 					case 0: Wire.requestFrom(2, 1); // Request one byte from slave arduino #2
 					case 1: Wire.requestFrom(3, 1); // Request one byte from slave arduino #3
