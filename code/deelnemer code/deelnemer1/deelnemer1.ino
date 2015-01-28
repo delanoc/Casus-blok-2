@@ -1,10 +1,10 @@
 /*
 	Namen: 			Delano Cörvers, Camiel Kerkhofs, Dennis Kooij, Davy Heutmekers
- 	Studentnummers:	1306669corvers, 1163981kooij, 1331833kerkhofs, 1309730heutmekers
+ 	Studentnummers:	        1306669corvers, 1163981kooij, 1331833kerkhofs, 1309730heutmekers
  	Klas:			IT1
  	Module:			PIT2 (2014-2015)
  	Versie:			deelnemer.1
- 	Inleverdatum:	2 februari 2015
+ 	Inleverdatum:	        2 februari 2015
 */
 
 
@@ -54,7 +54,7 @@ const char* antwoordenArray[][4] = {
   {"A: Rood", "B: Geel", "C: Groen", "D: Oranje"},
   {"A: 49", "B: 64", "C: 81", "D: 100"},
   {"A: Thermometer", "B: Barometer", "C: Magnetometer", "D: Seismograaf"},
-  {"A: L Hemsworth", "B: J Lawrence", "C: E Banks", "D: Stanley Tucci"},
+  {"A: Tom Cruise", "B: Brad Pitt", "C: Johnny Depp", "D: Liam Neeson"},
   {"A: Monaco", "B: Kiev", "C: Rome", "D: Minsk"},
   {"A: Aanraking", "B: Bakstenen", "C: Insecten", "D: Spoken"}
 };
@@ -79,7 +79,7 @@ void setup()
   Wire.onRequest(antwoorden); // gebruik 'antwoorden' functie als er iets gevraagd word door de master
 
   lcd.begin(16,2); //initialiseer lcd scherm
-  lcd.clear(); lcd.print("welkom"); lcd.setCursor(0, 1); lcd.print("wacht op start.."); //welkomstbericht
+  lcd.clear(); lcd.print("Welkom!"); lcd.setCursor(0, 1); lcd.print("Wacht op start.."); //welkomstbericht
 }
 
 
