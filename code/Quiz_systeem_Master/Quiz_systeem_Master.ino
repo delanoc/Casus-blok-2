@@ -3,7 +3,7 @@
 	Studentnummers:	1306669corvers, 1163981kooij, 1331833kerkhofs, 1309730heutmekers
 	Klas:			IT1
 	Module:			PIT2 (2014-2015)
-	Versie:			1.27
+	Versie:			1.28
 	Inleverdatum:	2 februari 2015
 */
 
@@ -14,7 +14,7 @@
 #include <avr/pgmspace.h> // Progmem library
 
 // ---------- Constants
-#define VERSION		1.27 // Based on month.day
+#define VERSION		1.28 // Based on month.day
 
 // Buttons
 #define btnPrev		5 // Previous button for the lcd menu
@@ -78,7 +78,7 @@ PROGMEM const char* questions[40] = {
 };
 
 // Correct answers array for all questions
-const char* answers[40] = { "B", "C", "A", "C", "A","A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
+const char* answers[40] = { "B", "C", "A", "C", "A", "A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
 	"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood",
 	"Rood, Blauw en Groen", "Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Olifant"};
 
@@ -127,11 +127,11 @@ void setup() {
 	lcd.begin(16, 2); lcd.clear(); // 16 columns, 2 rows
 	
 	// Startup message
-	lcd.setCursor(2, 0); // Set the cursor to the third column and the first row
+	lcd.setCursor(0, 0); // Set the cursor to the third column and the first row
 	lcd.print("Quiz systeem");
-	lcd.setCursor(2, 1); // Set the cursor to the first column and the second row
+	lcd.setCursor(0, 1); // Set the cursor to the first column and the second row
 	lcd.print("Versie:");
-	lcd.setCursor(10, 1); // Set the cursor to the ninth column and the first row
+	lcd.setCursor(8, 1); // Set the cursor to the ninth column and the first row
 	lcd.print(VERSION);
 	
 	delay(2000); // Delay to keep the welcome message on the LCD screen a little bit longer
@@ -187,6 +187,8 @@ void loop() {
 	lcd.setCursor(0, 0);
 	lcd.print("Spel winnaar:");
 	lcd.setCursor(0, 1);
+	lcd.print("Deelnemer:");
+	lcd.setCursor(11, 1);
 	lcd.print(gameWinner());
 	
 	delay(5000); // The game has ended, keep winner on screen for 5 seconds
@@ -365,26 +367,38 @@ void displayRoundNum(int currentQuestion) {
 void buzzerQuestion() {
 	Serial.println("DEBUG: Buzzer gamemode has been selected");
 	
-	questionIndex = random(0, 19); // Get a random number to use as an index in the question and score array
+	questionIndex = random(20, 39); // Get a random number to use as an index in the question and score array
 	strcpy_P(buffer, (char*)pgm_read_word(&(questions[questionIndex])));
-	
-	//questionIndex = 0; // TESTING PURPOSES
 	
 	displayQuestion(buffer); // Display the question and transmit the questionIndex
 	
 	// Display correct answer
 	lcd.clear();
-	lcd.setCursor(0, 0);
+	lcd.setCursor(4, 0);
 	lcd.print("Juist antwoord:");
-	lcd.setCursor(0, 1);
+	lcd.setCursor(4, 1);
 	lcd.print(answers[questionIndex]);
 	
-	delay(3500);
+	for (int i = 0; i < 16; i++) {
+		// Scroll one position left
+		lcd.scrollDisplayLeft();
+		delay(275);
+	}
+	
+	delay(6000);
+	
+	responseTime[0] = 10000; responseTime[1] = 10000; responseTime[2] = 10000; // Set a high response time, to determine what player pressed first
 	
 	handleResponse(0); // Request user input for buzzer gamemode
 	
+	fastestResponse();
+	transmitBuzzerState();
+	
 	bMenu();
+	transmitScore(scoreArray);
+	
 	displayScores(); // Print the scores for each player
+	
 	delay(1500);
 	lcd.clear();
 }
@@ -393,12 +407,17 @@ void buzzerQuestion() {
 void multipleChoiceQuestion() {
 	Serial.println("DEBUG: Multiple choice gamemode has been selected");
 	
-	questionIndex = random(20, 39); // Get a random number to use as an index in the question and score array
+	questionIndex = random(0, 19); // Get a random number to use as an index in the question and score array
 	strcpy_P(buffer, (char*)pgm_read_word(&(questions[questionIndex])));
 	
-	//questionIndex = 0; // TESTING PURPOSES
-	
 	displayQuestion(buffer); // Display the question and transmit the questionIndex
+	
+	lcd.clear();
+	lcd.setCursor(0, 0);
+	lcd.print("Antwoorden ");
+	lcd.setCursor(0, 1);
+	lcd.print("opvragen...");
+	delay(5000);
 	
 	handleResponse(1); // Request user input for buzzer gamemode
 	
@@ -410,6 +429,9 @@ void multipleChoiceQuestion() {
 	}
 	
 	displayScores(); // Print the scores for each player
+	
+	transmitScore(scoreArray);
+	
 	delay(1500);
 	lcd.clear();
 }
@@ -427,7 +449,7 @@ byte gameWinner() {
 	}
 	
 	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
-		if (scoreArray[i] == max) return i + 1; Serial.println("DEBUG: Game winner has been determined");// If any number in the score array is equal to max, return that participant + 1 -> Index starts at 0, playerids at 1
+		if (scoreArray[i] == max) return i + 1; Serial.println("DEBUG: Game winner has been determined"); // If any number in the score array is equal to max, return that participant + 1 -> Index starts at 0, playerids at 1
 	}
 }
 
@@ -445,9 +467,7 @@ void fastestResponse() {
 	
 	for (int i = 0; i < MAX_PARTICIPANTS; i++) {
 		if (responseTime[i] == min) {
-			participant = i; // If any number in the score array is equal to min, assign that number to participant
-			transmitBuzzerState();
-			
+			participant = i; // If any number in the score array is equal to min, assign that number to participant		
 			Serial.println("DEBUG: Fastest response has been detected.");
 		}
 	}
@@ -456,17 +476,17 @@ void fastestResponse() {
 // Function that displays the question on LCD and transmits the questionIndex to slaves
 void displayQuestion(String question) {
 	lcd.clear();
-	lcd.setCursor(0, 0);
+	lcd.setCursor(4, 0);
 	lcd.print(question);
 	
 	Serial.println("DEBUG: Question is being displayed on the LCD");
 	
 	transmitQuestion(questionIndex); delay(100); // Send the questionIndex to the slaves (so they know what the response options are)
 	
-	for (int i = 0; i < 32; i++) {
+	for (int i = 0; i < 40; i++) {
 		// Scroll one position left
 		lcd.scrollDisplayLeft();
-		delay(300);
+		delay(275);
 	}
 }
 
@@ -477,7 +497,6 @@ void toggleScore() {
 			lcd.clear();
 			displayScores(); // Print the scores to the screen
 		}
-		//Serial.println("DEBUG: Quizmaster toggled score");
 	}
 	else if (digitalRead(btnToggle) == LOW) {
 		switch(state) {
@@ -513,38 +532,38 @@ void displayScores() {
 
 // Function that sends the question index to slaves
 void transmitQuestion(byte questionIndex) {
-  for (byte device = 2; device < 5; device++) { // Send the round number to device 2, 3 and 4 one by one
-    Wire.beginTransmission(device); // Transmit to device #x
-    Wire.write(1); // Identifer to tell the slave arduinos that the next byte is a question
-    Wire.write(questionIndex); // Send the questionIndex (1 byte)
-    Wire.endTransmission(); // Stop transmitting
+	for (byte device = 2; device < 5; device++) { // Send the round number to device 2, 3 and 4 one by one
+		Wire.beginTransmission(device); // Transmit to device #x
+		Wire.write(1); // Identifer to tell the slave arduinos that the next byte is a question
+		Wire.write(questionIndex); // Send the questionIndex (1 byte)
+		Wire.endTransmission(); // Stop transmitting
+	}
 	
 	Serial.println("DEBUG: Question has been transmitted to a slave");
-  }
 }
 
 // Function that sends the round number to slaves
 void transmitRoundNum(byte roundNumber) {
-  for (byte device = 2; device < 5; device++) { // Send the round number to device 2, 3 and 4 one by one
-    Wire.beginTransmission(device); // Transmit to device #x
-    Wire.write(2); // Identifer to tell the slave arduinos that the next byte is the round number
-    Wire.write(roundNumber);
-    Wire.endTransmission();
+	for (byte device = 2; device < 5; device++) { // Send the round number to device 2, 3 and 4 one by one
+		Wire.beginTransmission(device); // Transmit to device #x
+		Wire.write(2); // Identifer to tell the slave arduinos that the next byte is the round number
+		Wire.write(roundNumber);
+		Wire.endTransmission();
+	}
 	
 	Serial.println("DEBUG: Round number has been transmitted to a slave");
-  }
 }
 
 // Function that sends the maximum amount of rounds to slaves
 void transmitRoundMax(byte roundMax) {
-  for (byte device = 2; device < 5; device++) { // Send the round number to device 2, 3 and 4 one by one
-    Wire.beginTransmission(device); // Transmit to device #x
-    Wire.write(3); // Identifer to tell the slave arduinos that the next byte is the maximum amount of questions
-    Wire.write(roundMax);
-    Wire.endTransmission();
-	
+	for (byte device = 2; device < 5; device++) { // Send the round number to device 2, 3 and 4 one by one
+		Wire.beginTransmission(device); // Transmit to device #x
+		Wire.write(3); // Identifer to tell the slave arduinos that the next byte is the maximum amount of questions
+		Wire.write(roundMax);
+		Wire.endTransmission();
+	}
+  
 	Serial.println("DEBUG: Max amount of questions has been transmitted to a slave");
-  }
 }
 
 // Function that sends the score to slaves
@@ -554,9 +573,9 @@ void transmitScore(byte *scoreArray) {
 	  Wire.write(4); // Identifer to tell the slave arduinos that the next byte is the score array
 	  Wire.write(scoreArray, 3);
 	  Wire.endTransmission();
-	  
-	  Serial.println("DEBUG: Scores have been transmitted to a slave");
 	}
+	
+	Serial.println("DEBUG: Scores have been transmitted to a slave");
 }
 
 // Function that sends the game state to slaves (true or false -> next round or game ended)
@@ -566,17 +585,19 @@ void transmitGameState(byte state) {
 	  Wire.write(5); // Identifer to tell the slave arduinos that the next byte is the game state
 	  Wire.write(state);
   	  Wire.endTransmission();
-	  
-	  Serial.println("DEBUG: Game state has been transmitted to a slave");
 	}
+	
+	Serial.println("DEBUG: Game state has been transmitted to a slave");
 }
 
 // Function that sends the game state to slaves (true or false -> next round or game ended)
 void transmitBuzzerState() {
-	Wire.beginTransmission(participant); // Transmit to device #x
-	Wire.write(6); // Identifer to tell the slave arduinos that the next byte is the fastest response
-  	Wire.endTransmission();
-	
+	for (byte device = 2; device < 5; device++) {
+		Wire.beginTransmission(device); // Transmit to device #x
+		Wire.write(6); // Identifer to tell the slave arduinos that the next byte is the fastest response
+		Wire.endTransmission();
+	}
+		
 	Serial.println("DEBUG: Buzzer state has been transmitted to a slave");
 }
 
@@ -592,29 +613,19 @@ void handleResponse(byte gamemodeID) {
 				int time = 0; // Storage user response time as an integer
         
 				switch(device) {
-					case 0: Wire.requestFrom(2, 1); // Request one byte from slave arduino #2
-					case 1: Wire.requestFrom(3, 1); // Request one byte from slave arduino #3
-					case 2: Wire.requestFrom(4, 1); // Request one byte from slave arduino #4
+					case 0: Wire.requestFrom(2, 4); break; // Request one byte from slave arduino #2
+					case 1: Wire.requestFrom(3, 4); break; // Request one byte from slave arduino #3
+					case 2: Wire.requestFrom(4, 4); break; // Request one byte from slave arduino #4
 				}
-				
-				// What does this do?
-				Wire.requestFrom(2, 4); // Request four bytes from slave arduino #2 (the time)
-				Serial.print("\nvoor: ");
-				Serial.print(inputPlayer);
 		
 				for (int x = 0; x < 4; x++) {
 					inputPlayer[x] = Wire.read(); // Store the bytes as characters
 					time = 10 * time + inputPlayer[x] - 48; // Convert string to integer (EG: "1740" -> 1740)
-					Serial.print(time);
-					Serial.print(" ");
 				}
 		
 				responseTime[device] = time;
-				Serial.print("\nReactietijd speler 1 char: ");
-				Serial.print(inputPlayer);
-				Serial.print("\nReactietijd speler 1 int: ");
-				Serial.print(time);
 				delay(200);
+				break;
 			}
 			
 			// Incase the gamemode is multiple choice
@@ -622,15 +633,20 @@ void handleResponse(byte gamemodeID) {
 				Serial.println("DEBUG: Get slave response to multiple choice question");
 				
 				switch(device) {
-					case 0: Wire.requestFrom(2, 1); // Request one byte from slave arduino #2
-					case 1: Wire.requestFrom(3, 1); // Request one byte from slave arduino #3
-					case 2: Wire.requestFrom(4, 1); // Request one byte from slave arduino #4
-        
-					multipleChoiceResponse[device] = Wire.read(); // Storage the bytes that the arduinos sent
-					delay(200);
-					Serial.print("\n\nAntwoord speler: ");
-					Serial.print(multipleChoiceResponse[device]);
+					case 0: Wire.requestFrom(2, 1); break; // Request one byte from slave arduino #2
+					case 1: Wire.requestFrom(3, 1); break; // Request one byte from slave arduino #3
+					case 2: Wire.requestFrom(4, 1); break; // Request one byte from slave arduino #4
 				}
+				
+				Serial.println(Wire.available());
+				multipleChoiceResponse[device] = Wire.read(); // Storage the bytes that the arduinos sent
+				
+				delay(200);
+				
+				Serial.println("MP Antwoord:");
+				Serial.println(multipleChoiceResponse[device]);
+				
+				break;
 			}
 		}
     }
