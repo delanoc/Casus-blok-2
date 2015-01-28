@@ -169,6 +169,11 @@ void loop() {
 	for (gameRound = 1; gameRound <= maxQuestions; gameRound++) {
 		gmMenu(); lcd.clear(); state = 0; // Choose gamemode per round
 		transmitRoundNum(gameRound); delay(100); // Transmit the round number to slave arduinos
+		
+		// Tell participants if there is another question in the game or not
+		if (gameRound != maxQuestions) transmitGameState(1); // There is a question left
+		else transmitGameState(0); // There are no more questions
+		
 		displayRoundNum(gameRound); delay(1750); // Display the current question relative to the total amount of questions
 		
 		// Load the requested gamemode
@@ -176,10 +181,6 @@ void loop() {
 			case 0: buzzerQuestion(); break; // Buzzer question		
 			case 1: multipleChoiceQuestion(); break; // Multiple choice question
 		}
-		
-		// Tell participants if there is another question in the game or not
-		if (gameRound != maxQuestions) transmitGameState(1); // There is a question left
-		else transmitGameState(0); // There are no more questions
 	}
 	
 	// Show the quizmaster, which participant had the highest score and won	
