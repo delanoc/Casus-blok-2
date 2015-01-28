@@ -7,6 +7,11 @@
  	Inleverdatum:	        2 februari 2015
 */
 
+//--------
+//deelnemer nummer: (iedere deelnemer arduino heeft een ander ID)
+int deelnemerID = 1; 
+//--------
+
 
 // ---------- Includes
 #include <LiquidCrystal.h> //LCD Library
@@ -34,6 +39,7 @@ byte gamemodeID=0;
 byte huidigeRonde = 0;
 byte printIndex = 0;
 char reactietijd[] = "0000";
+boolean bezig = false;
 
 //antwoord mogelijkheden meerkeuze vragen:
 const char* antwoordenArray[][4] = {
@@ -74,20 +80,23 @@ void setup()
   Serial.begin(9600);
   Serial.print("initialized");
 
-  Wire.begin(2); // sluit aan op I2C bus met adres 2
+  int adresID = deelnemerID + 1;
+  Wire.begin(adresID); // sluit aan op I2C bus met als adres deelnemerID+1
   Wire.onReceive(ontvanger); // gebruik 'ontvanger' functie als er iets gestuurd word door de master
   Wire.onRequest(antwoorden); // gebruik 'antwoorden' functie als er iets gevraagd word door de master
 
   lcd.begin(16,2); //initialiseer lcd scherm
+  
+  attachInterrupt(0, toggleMenu, CHANGE); //interrupt voor toggle button
 }
 
 
 void loop()
 {
   if (rondeNummer == 0) {
-    lcd.clear(); lcd.print("Welkom!"); lcd.setCursor(0, 1); lcd.print("U bent deelnemer 1.");//Welkomstbericht
-    lcd.clear(); lcd.print("Wacht op start.."); 
+    lcd.clear(); lcd.print("Welkom!"); lcd.setCursor(0, 1); lcd.print("Wacht op start.."); 
   }
+  
   //begin nieuwe ronde zodra quizmaster arduino het nieuwe ronde nummer doorstuurt
   boolean startGame = false;
   while (!startGame) {
@@ -98,6 +107,7 @@ void loop()
   }
   huidigeRonde = huidigeRonde + 1;
 
+  //ronde info weergeven
   lcd.clear(); lcd.print("Ronde begint..");
   lcd.setCursor(0, 1); lcd.print("Ronde: "); lcd.print(rondeNummer);
   delay(3000); //geef quizmaster arduino tijd om questionIndex door te sturen.
@@ -114,10 +124,9 @@ void loop()
   } 
 
   delay(2000);
+  digitalWrite(ledLamp, LOW); //led uit doen (ook als deze al uit is)
   
-  //ronde afgelopen
-  //score weergeven?
-  //delay?
+  //weergeef winnaar als spel is afgelopen
   if (spelStatus == 0) {
     rondeNummer = 0;
     byte hoogsteScore = 0;
@@ -130,12 +139,11 @@ void loop()
         lcd.setCursor(0, 1); lcd.print("deelnemer "); lcd.print(winnaar);
       }
     }
-    delay(5000); //winnaar 5 seconde weergeven
+    delay(5000); //winnaar 5 seconden weergeven
   }
-  
-  
-  
+
 }
+
 
 
 // -------- functies:
@@ -143,8 +151,9 @@ void loop()
 //functie voor het beantwoorden van de meerkeuze vraag:
 void beantwoordMeerkeuze()
 {
+  bezig = true;
   //laat gebruiker door de antwoord mogelijkheden scrollen met buttons.
-  //printIndex 1 = antwoord A, printIndex 2 = antwoord B, enzovoorts.
+  //printIndex 0 = antwoord A, printIndex 1 = antwoord B, enzovoorts.
   printIndex = 0;
   lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
   lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
@@ -169,11 +178,12 @@ void beantwoordMeerkeuze()
         selected = true; //het huidige antwoord wordt geselecteerd als definitief
       }
     }
-  //print het huidige antwoord:
-  lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
-  lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
-  delay(200); //delay voorkomt dubbele button klik
+	//print het huidige antwoord:
+	lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
+	lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
+	delay(200); //delay voorkomt dubbele button klik
   }
+  bezig = false;
 }
 
 
@@ -181,6 +191,8 @@ void beantwoordMeerkeuze()
 //functie voor het beantwoorden van de buzzer vraag:
 void beantwoordBuzzer()
 {
+  bezig = true;
+  
   int responseTimeStart = millis(); //meet begin tijd
   lcd.clear(); lcd.print("druk om te"); 
   lcd.setCursor(0, 1); lcd.print("antwoorden..");
@@ -196,10 +208,12 @@ void beantwoordBuzzer()
     }
   }
   
-  int reactietijdInteger  = responseTimeEnd - responseTimeStart; //bereken reactietijd
-  reactietijdInteger = reactietijdInteger + 1000; //zorgt dat reactietijd minimaal 4 bytes heeft
+  int reactietijdInteger  = responseTimeEnd - responseTimeStart; //bereken reactietijd (integer)
+  reactietijdInteger = reactietijdInteger + 1000; //zorgt dat reactietijd minimaal 4 bytes heeft (om te versturen)
   String reactietijdString = String(reactietijdInteger); //sla integer op als string
   reactietijdString.toCharArray(reactietijd,4); //sla string op als character array met lengte 4 (bv '1740')
+  
+  bezig = false;
 }
 
 
@@ -207,7 +221,7 @@ void beantwoordBuzzer()
 //functie voor het ontvangen van berichten van de quizmaster arduino
 void ontvanger(int numBytes)
 {
-  //lees eerste write (byte 1 t/m 6, geeft communicatie type aan)
+  //lees eerste write (1 byte, kan waarde zijn van 1 t/m 6, geeft communicatie type aan)
   Serial.print("\n start ontvangen, type: ");
   int type = Wire.read();
   Serial.print(type);
@@ -260,8 +274,6 @@ void ontvanger(int numBytes)
     //laat buzzer en led 2 seconden aangaan als quizmaster een type 6 stuurt
     tone(6, 300, 1000);
     digitalWrite(ledLamp, HIGH);
-    delayMicroseconds(1000000);
-    digitalWrite(ledLamp, LOW);
   }
 }
 
@@ -270,12 +282,27 @@ void antwoorden()
 {
   Serial.println("antwoorden");
   if (gamemodeID == 1) { //in geval van meerkeuze: (1 byte)
+	//stuur antwoord (1 byte char)
+	//printIndex 0 = antwoord A, printIndex 1 = antwoord B, enzovoorts.
     if (printIndex == 0) {Wire.write("A"); Serial.println("A");}
     else if (printIndex == 1) {Wire.write("B"); Serial.println("B");}
     else if (printIndex == 2) {Wire.write("C"); Serial.println("C");}
     else if (printIndex == 3) {Wire.write("D"); Serial.println("D");}
   }
   else if (gamemodeID == 0) { //in geval van buzzer: (4 bytes)
-    Wire.write(reactietijd);
+    Wire.write(reactietijd); //stuur reactietijd (4 byte char)
   }    
+}
+
+//toggle menu om score en ID van deelnemer te laten zien
+void toggleMenu()
+{
+	while (!bezig) {
+		if (digitalRead(btnToggle) == HIGH) {
+			int scoreID = deelnemerID - 1;
+			lcd.clear(); lcd.print("Deelnemer "); lcd.print(deelnemerID); //print deelnemerID op eerste regel
+			lcd.setCursor(0, 1); lcd.print("Score: "); lcd.print(scoreArray[scoreID]); //print score van deelnemer op tweede regel
+			lcd.print("  "); lcd.print(rondeNummer); lcd.print("/"); lcd.print(maxRondes); //print rondnummer/maxrondes op tweede regel
+		}
+	}
 }
