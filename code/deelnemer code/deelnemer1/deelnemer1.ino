@@ -54,7 +54,7 @@ const char* antwoordenArray[][4] = {
   {"A: Rood", "B: Geel", "C: Groen", "D: Oranje"},
   {"A: 49", "B: 64", "C: 81", "D: 100"},
   {"A: Thermometer", "B: Barometer", "C: Magnetometer", "D: Seismograaf"},
-  {"A: L Hemsworth", "B: J Lawrence", "C: E Banks", "D: Stanley Tucci"},
+  {"A: Tom Cruise", "B: Brad Pitt", "C: Johnny Depp", "D: Liam Neeson"},
   {"A: Monaco", "B: Kiev", "C: Rome", "D: Minsk"},
   {"A: Aanraking", "B: Bakstenen", "C: Insecten", "D: Spoken"}
 };
@@ -85,7 +85,8 @@ void setup()
 void loop()
 {
   if (rondeNummer == 0) {
-    lcd.clear(); lcd.print("welkom"); lcd.setCursor(0, 1); lcd.print("wacht op start.."); //welkomstbericht
+    lcd.clear(); lcd.print("Welkom!"); lcd.setCursor(0, 1); lcd.print("U bent deelnemer 1.");//Welkomstbericht
+    lcd.clear(); lcd.print("Wacht op start.."); 
   }
   //begin nieuwe ronde zodra quizmaster arduino het nieuwe ronde nummer doorstuurt
   boolean startGame = false;
