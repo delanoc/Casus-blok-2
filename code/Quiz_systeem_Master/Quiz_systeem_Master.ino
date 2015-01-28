@@ -188,8 +188,8 @@ void loop() {
 	lcd.setCursor(0, 0);
 	lcd.print("Spel winnaar:");
 	lcd.setCursor(0, 1);
-	lcd.print("Deelnemer:");
-	lcd.setCursor(11, 1);
+	lcd.print("Deelnemer");
+	lcd.setCursor(10, 1);
 	lcd.print(gameWinner());
 	
 	delay(5000); // The game has ended, keep winner on screen for 5 seconds
