@@ -459,7 +459,7 @@ void displayQuestion(String question) {
 	lcd.setCursor(0, 0);
 	lcd.print(question);
 	
-	Serial.print("Question is being displayed on the LCD");
+	Serial.println("DEBUG: Question is being displayed on the LCD");
 	
 	transmitQuestion(questionIndex); delay(100); // Send the questionIndex to the slaves (so they know what the response options are)
 	
@@ -476,12 +476,15 @@ void toggleScore() {
 		if ((state == 1) || (state == 2) || (state == 3)) {
 			lcd.clear();
 			displayScores(); // Print the scores to the screen
-			
-			Serial.println("DEBUG: Quizmaster toggled score");
 		}
+		//Serial.println("DEBUG: Quizmaster toggled score");
 	}
 	else if (digitalRead(btnToggle) == LOW) {
-		if ((state == 1) || (state == 2) || (state == 3)) lcd.clear(); first = true;
+		switch(state) {
+			case 1: lcd.clear(); first = true; break;
+			case 2: lcd.clear(); first = true; break;
+			case 3: lcd.clear(); first = true; break;
+		}
 	}
 }
 
