@@ -16,8 +16,8 @@
 //hardware pins
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12); //LCD
 
-int buzzer = 9; //buzzer
-int ledlamp = 13; //led lampje
+int buzzer = 6; //buzzer
+int ledLamp = 13; //led lampje
 
 int btnPrev = 5; //knop 1 (vorige)
 int btnNext = 4; //knop 2 (volgende)
@@ -26,13 +26,13 @@ int btnToggle = 2; //knop 4 (scores weergeven)
  
 //globale variabelen:
 byte questionIndex = 0;
-byte rondeNummer;
+byte rondeNummer = 0;
 byte maxRondes = 0;
-byte scoreArray(3);
-byte spelStatus= 0;
+byte scoreArray[3];
+byte spelStatus= 1;
 byte gamemodeID=0;
 byte huidigeRonde = 0;
-char antwoord[] = "X";
+byte printIndex = 0;
 char reactietijd[] = "0000";
 
 //antwoord mogelijkheden meerkeuze vragen:
@@ -41,8 +41,8 @@ const char* antwoordenArray[][4] = {
   {"A: 1", "B: 2", "C: 3", "D: 4"},
   {"A: Amalia", "B: Willem V", "C: Alexia", "D: Ariane"},
   {"A: Henkjan", " B: Frank", "C: Claus", "D: Willem"},
-  {"Onjuist", "Juist", "-", "-"},
-  {"Onjuist", "Juist", "-", "-"},
+  {"Juist", "Onjuist", "-", "-"},
+  {"Juist", "Onjuist", "-", "-"},
   {"A: Microsoft", "B: Apple", "C: Ikea", "D: Huaweii"},
   {"A: E Watson", "B: R Weasley", "C: D Radcliffe", "D: R Pattin"},
   {"A: Basketbal", "B: Hockey", "C: Voetbal", "D: Korfbal"},
@@ -54,7 +54,7 @@ const char* antwoordenArray[][4] = {
   {"A: Rood", "B: Geel", "C: Groen", "D: Oranje"},
   {"A: 49", "B: 64", "C: 81", "D: 100"},
   {"A: Thermometer", "B: Barometer", "C: Magnetometer", "D: Seismograaf"},
-  {"A: Tom Cruise", "B: Brad Pitt", "C: Johnny Depp", "D: Liam Neeson"},
+  {"A: L Hemsworth", "B: J Lawrence", "C: E Banks", "D: Stanley Tucci"},
   {"A: Monaco", "B: Kiev", "C: Rome", "D: Minsk"},
   {"A: Aanraking", "B: Bakstenen", "C: Insecten", "D: Spoken"}
 };
@@ -69,7 +69,7 @@ void setup()
   pinMode(btnToggle, INPUT);
 
   pinMode(buzzer, OUTPUT);
-  pinMode(ledlamp, OUTPUT);
+  pinMode(ledLamp, OUTPUT);
 
   Serial.begin(9600);
   Serial.print("initialized");
@@ -79,12 +79,14 @@ void setup()
   Wire.onRequest(antwoorden); // gebruik 'antwoorden' functie als er iets gevraagd word door de master
 
   lcd.begin(16,2); //initialiseer lcd scherm
-  lcd.clear(); lcd.print("Welkom!"); lcd.setCursor(0, 1); lcd.print("Wacht op start.."); //welkomstbericht
 }
 
 
 void loop()
 {
+  if (rondeNummer == 0) {
+    lcd.clear(); lcd.print("welkom"); lcd.setCursor(0, 1); lcd.print("wacht op start.."); //welkomstbericht
+  }
   //begin nieuwe ronde zodra quizmaster arduino het nieuwe ronde nummer doorstuurt
   boolean startGame = false;
   while (!startGame) {
@@ -110,9 +112,28 @@ void loop()
 	beantwoordBuzzer(); //start functie om antwoord te geven op de buzzer vraag
   } 
 
+  delay(2000);
+  
   //ronde afgelopen
   //score weergeven?
   //delay?
+  if (spelStatus == 0) {
+    rondeNummer = 0;
+    byte hoogsteScore = 0;
+    for (byte deelnemer = 0; deelnemer < 3; deelnemer++) {
+      int score = scoreArray[deelnemer];
+      if (score > hoogsteScore) {
+        hoogsteScore = scoreArray[deelnemer];
+        lcd.clear(); lcd.print("einde. winnaar:");
+        int winnaar = deelnemer + 1;
+        lcd.setCursor(0, 1); lcd.print("deelnemer "); lcd.print(winnaar);
+      }
+    }
+    delay(5000); //winnaar 5 seconde weergeven
+  }
+  
+  
+  
 }
 
 
@@ -123,21 +144,22 @@ void beantwoordMeerkeuze()
 {
   //laat gebruiker door de antwoord mogelijkheden scrollen met buttons.
   //printIndex 1 = antwoord A, printIndex 2 = antwoord B, enzovoorts.
-  lcd.clear();
-  int printIndex = 1;
+  printIndex = 0;
+  lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
+  lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
   boolean selected = false;
   while (!selected) { //wacht tot gebruiker een definitieve keuze maakt
     boolean pressed = false;
     while (!pressed) { //wacht tot gebruiker een button indrukt
       if (digitalRead(btnPrev) == HIGH) {
-        if (printIndex > 1) {
-          int printIndex = printIndex -1; //ga naar vorige antwoord
+        if (printIndex > 0) {
+          printIndex = printIndex -1; //ga naar vorige antwoord
         }
         pressed = true;
       }
       else if (digitalRead(btnNext) == HIGH) {
-        if (printIndex < 4) {
-          int printIndex = printIndex +1; //ga naar volgende antwoord
+        if (printIndex < 3) {
+          printIndex = printIndex +1; //ga naar volgende antwoord
         }
         pressed = true;
       }
@@ -145,18 +167,12 @@ void beantwoordMeerkeuze()
         pressed = true;
         selected = true; //het huidige antwoord wordt geselecteerd als definitief
       }
-	  //print het huidige antwoord:
-	  lcd.setCursor(0, 0); lcd.print("antwoord:"); 
-      lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
     }
-	delay(200); //delay voorkomt dubbele button klik
+  //print het huidige antwoord:
+  lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
+  lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
+  delay(200); //delay voorkomt dubbele button klik
   }
-  
-  //sla het gekozen antwoord op als een char van 1 byte
-  if (printIndex == 1) {char antwoord[] = "A";}
-  else if (printIndex == 2) {char antwoord[] = "B";}
-  else if (printIndex == 3) {char antwoord[] = "C";}
-  else if (printIndex == 4) {char antwoord[] = "D";}
 }
 
 
@@ -234,30 +250,31 @@ void ontvanger(int numBytes)
   
   else if (type == 5) { // gaat om spel status
     //spelstatus is 1 of 0 en geeft aan of het spel is afgelopen (1 = nieuwe ronde, 0 = afgelopen)
-	spelStatus = Wire.read(); 
+    spelStatus = Wire.read(); 
     Serial.println("\n spelstatus: "); 
     Serial.println(spelStatus);
   }
   
   else if (type == 6) { // gaat om buzzer status
     //laat buzzer en led 2 seconden aangaan als quizmaster een type 6 stuurt
-	digitalWrite(buzzer, HIGH); 
-    digitalWrite(ledlamp, HIGH);
-    delay(2000);
-    digitalWrite(buzzer, LOW);
-    digitalWrite(ledlamp, LOW);
+    tone(6, 300, 1000);
+    digitalWrite(ledLamp, HIGH);
+    delayMicroseconds(1000000);
+    digitalWrite(ledLamp, LOW);
   }
 }
 
 //functie voor doorsturen van de antwoorden als quizmaster hierom vraagt.
 void antwoorden()
 {
+  Serial.println("antwoorden");
   if (gamemodeID == 1) { //in geval van meerkeuze: (1 byte)
-    Wire.write(antwoord);
+    if (printIndex == 0) {Wire.write("A"); Serial.println("A");}
+    else if (printIndex == 1) {Wire.write("B"); Serial.println("B");}
+    else if (printIndex == 2) {Wire.write("C"); Serial.println("C");}
+    else if (printIndex == 3) {Wire.write("D"); Serial.println("D");}
   }
   else if (gamemodeID == 0) { //in geval van buzzer: (4 bytes)
     Wire.write(reactietijd);
   }    
 }
-
-
