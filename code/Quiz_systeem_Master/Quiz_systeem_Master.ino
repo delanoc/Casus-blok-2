@@ -26,48 +26,48 @@
 #define MAX_PARTICIPANTS 3
 
 // Questions saved in PROGMEM
-// Buzzer
-prog_char question1[] PROGMEM = "Hoe heet een bril zonder glazen?";
-prog_char question2[] PROGMEM = "Wat betekent de afkorting GUI?";
-prog_char question3[] PROGMEM = "Waarvoor staat de afkorting SQL?";
-prog_char question4[] PROGMEM = "Met welke techniek wint men direct bij judo?";
-prog_char question5[] PROGMEM = "Welke Britse zangeres had een hit in 2006 met `Rehab’?";
-prog_char question6[] PROGMEM = "Als u een `chalkie` in Australië was, wat zou uw beroep zijn?";
-prog_char question7[] PROGMEM = "Wat is de eerste letter  van het Griekse alfabet?";
-prog_char question8[] PROGMEM = "Welke kleur bevindt zich aan de top van een regenboog?";
-prog_char question9[] PROGMEM = "Wat zijn de drie primaire kleuren van licht?";
-prog_char question10[] PROGMEM = "Welke organisatie is ook gekend als ‘De cosa nostra’?";
-prog_char question11[] PROGMEM = "Wat is de grootste zoekmachine op internet?";
-prog_char question12[] PROGMEM = "Welke kleur komt in vlaggen over de hele wereld het meeste  voor?";
-prog_char question13[] PROGMEM = "Uit welk land komt Tequila?";
-prog_char question14[] PROGMEM = "Wie was de oppergod in de Griekse mythologie?";
-prog_char question15[] PROGMEM = "Wat was Rocky`s achternaam in de boksfilm ‘Rocky’?";
-prog_char question16[] PROGMEM = "Wat is kleiner dan een molecuul?";
-prog_char question17[] PROGMEM = "Hoeveel magen heeft een vogel?";
-prog_char question18[] PROGMEM = "Hoeveel ogen heeft een honingbij?";
-prog_char question19[] PROGMEM = "Wat is het hoogste gras in de wereld?";
-prog_char question20[] PROGMEM = "Wat is het grootste landzoogdier in de wereld?";
 // Multiple choice
-prog_char question21[] PROGMEM = "Wat is de hoofdstad van Nederland?";
-prog_char question22[] PROGMEM = "Hoeveel vestigingen heeft Zuyd Hogeschool?";
-prog_char question23[] PROGMEM = "Wat is de naam van de volgende Koning(in) van Nederland?";
-prog_char question24[] PROGMEM = "Hoe heette de man van prinses Beatrix?";
-prog_char question25[] PROGMEM = "Heeft WhatsApp Facebook overgekocht?";
-prog_char question26[] PROGMEM = "Mag men met een autorijbewijs ook een scooter besturen?";
-prog_char question27[] PROGMEM = "Welk bedrijf gebruikte als eerste een GUI?";
-prog_char question28[] PROGMEM = "Welke acteur speelt de rol van Harry Potter?";
-prog_char question29[] PROGMEM = "Bij welke sport spelen zowel mannen als vrouwen in één team?";
-prog_char question30[] PROGMEM = "In welk jaar vond de laatste Elfstedentoch plaats?";
-prog_char question31[] PROGMEM = "Hoeveel kegels moet men omwerpen bij bowlen?";
-prog_char question32[] PROGMEM = "Hoeveel bollen telt het Atomium?";
-prog_char question33[] PROGMEM = "Hoeveel rozijnen zitten in twee dozijnen?";
-prog_char question34[] PROGMEM = "Hoeveel magen heeft een koe?";
-prog_char question35[] PROGMEM = "Welke kleur had de originele Cola?";
-prog_char question36[] PROGMEM = "Uit hoeveel hokjes bestaat een sudokuspel?";
-prog_char question37[] PROGMEM = "Met welk toestel meet men aardbevingen?";
-prog_char question38[] PROGMEM = "Wie speelt de hoofdrol in 'The Hunger Games'?";
-prog_char question39[] PROGMEM = "Voor wat is Phasmaphobia de vrees?";
-prog_char question40[] PROGMEM = "Volgens een oud gezegde leiden alle wegen tot een hoofdstad, welke?";
+prog_char question1[] PROGMEM = "Wat is de hoofdstad van Nederland?";
+prog_char question2[] PROGMEM = "Hoeveel vestigingen heeft Zuyd Hogeschool?";
+prog_char question3[] PROGMEM = "Wat is de naam van de volgende Koning(in) van Nederland?";
+prog_char question4[] PROGMEM = "Hoe heette de man van prinses Beatrix?";
+prog_char question5[] PROGMEM = "Heeft WhatsApp Facebook overgekocht?";
+prog_char question6[] PROGMEM = "Mag men met een autorijbewijs ook een scooter besturen?";
+prog_char question7[] PROGMEM = "Welk bedrijf gebruikte als eerste een GUI?";
+prog_char question8[] PROGMEM = "Welke acteur speelt de rol van Harry Potter?";
+prog_char question9[] PROGMEM = "Bij welke sport spelen zowel mannen als vrouwen in één team?";
+prog_char question10[] PROGMEM = "In welk jaar vond de laatste Elfstedentoch plaats?";
+prog_char question11[] PROGMEM = "Hoeveel kegels moet men omwerpen bij bowlen?";
+prog_char question12[] PROGMEM = "Hoeveel bollen telt het Atomium?";
+prog_char question13[] PROGMEM = "Hoeveel rozijnen zitten in twee dozijnen?";
+prog_char question14[] PROGMEM = "Hoeveel magen heeft een koe?";
+prog_char question15[] PROGMEM = "Welke kleur had de originele Cola?";
+prog_char question16[] PROGMEM = "Uit hoeveel hokjes bestaat een sudokuspel?";
+prog_char question17[] PROGMEM = "Met welk toestel meet men aardbevingen?";
+prog_char question18[] PROGMEM = "Wie speelt de hoofdrol in 'The Hunger Games'?";
+prog_char question19[] PROGMEM = "Voor wat is Phasmaphobia de vrees?";
+prog_char question20[] PROGMEM = "Volgens een oud gezegde leiden alle wegen tot een hoofdstad, welke?";
+// Buzzer
+prog_char question21[] PROGMEM = "Hoe heet een bril zonder glazen?";
+prog_char question22[] PROGMEM = "Wat betekent de afkorting GUI?";
+prog_char question23[] PROGMEM = "Waarvoor staat de afkorting SQL?";
+prog_char question24[] PROGMEM = "Met welke techniek wint men direct bij judo?";
+prog_char question25[] PROGMEM = "Welke Britse zangeres had een hit in 2006 met `Rehab’?";
+prog_char question26[] PROGMEM = "Als u een `chalkie` in Australië was, wat zou uw beroep zijn?";
+prog_char question27[] PROGMEM = "Wat is de eerste letter  van het Griekse alfabet?";
+prog_char question28[] PROGMEM = "Welke kleur bevindt zich aan de top van een regenboog?";
+prog_char question29[] PROGMEM = "Wat zijn de drie primaire kleuren van licht?";
+prog_char question30[] PROGMEM = "Welke organisatie is ook gekend als ‘De cosa nostra’?";
+prog_char question31[] PROGMEM = "Wat is de grootste zoekmachine op internet?";
+prog_char question32[] PROGMEM = "Welke kleur komt in vlaggen over de hele wereld het meeste  voor?";
+prog_char question33[] PROGMEM = "Uit welk land komt Tequila?";
+prog_char question34[] PROGMEM = "Wie was de oppergod in de Griekse mythologie?";
+prog_char question35[] PROGMEM = "Wat was Rocky`s achternaam in de boksfilm ‘Rocky’?";
+prog_char question36[] PROGMEM = "Wat is kleiner dan een molecuul?";
+prog_char question37[] PROGMEM = "Hoeveel magen heeft een vogel?";
+prog_char question38[] PROGMEM = "Hoeveel ogen heeft een honingbij?";
+prog_char question39[] PROGMEM = "Wat is het hoogste gras in de wereld?";
+prog_char question40[] PROGMEM = "Wat is het grootste landzoogdier in de wereld?";
 
 // Array pointer to flash stored question database
 PROGMEM const char* questions[40] = {   
@@ -78,12 +78,12 @@ PROGMEM const char* questions[40] = {
 };
 
 // Correct answers array for all questions
-const char* answers[40] = {"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood",
-	"Rood, Blauw en Groen", "Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Olifant", "B", "C", "A", "C", "A",
-	"A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D"};
+const char* answers[40] = { "B", "C", "A", "C", "A","A", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
+	"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood",
+	"Rood, Blauw en Groen", "Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Olifant"};
 
 // Scores for the questions
-const byte scores[20] = {2, 8, 2, 4, 4, 4, 8, 2, 4, 8, 4, 8, 2, 2, 8, 4, 4, 2, 8, 4}; // NEED 20 MORE SCORES
+const byte scores[40] = {2, 8, 2, 4, 4, 4, 8, 2, 4, 8, 4, 8, 2, 2, 8, 4, 4, 2, 8, 4, 2, 4, 8, 4, 2, 6, 4, 2, 8, 4, 2, 4, 4, 8, 6, 8, 8, 2, 2, 4};
 
 // Buffer for reading promem to ram
 char buffer[70];
