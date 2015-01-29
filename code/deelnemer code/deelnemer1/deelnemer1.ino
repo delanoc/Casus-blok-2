@@ -9,7 +9,7 @@
 
 //--------
 //deelnemer nummer: (iedere deelnemer arduino heeft een ander ID)
-int deelnemerID = 1; 
+int deelnemerID = 3;
 //--------
 
 
@@ -38,7 +38,7 @@ byte spelStatus= 1;
 byte gamemodeID=0;
 byte huidigeRonde = 0;
 byte printIndex = 0;
-char reactietijd[] = "0000";
+char reactietijd[] = "9999";
 boolean bezig = true;
 
 //antwoord mogelijkheden meerkeuze vragen:
@@ -61,11 +61,12 @@ const char* antwoordenArray[][4] = {
   {"A: 49", "B: 64", "C: 81", "D: 100"},
   {"A: Thermometer", "B: Barometer", "C: Magnetometer", "D: Seismograaf"},
   {"A: Tom Cruise", "B: Brad Pitt", "C: Johnny Depp", "D: Liam Neeson"},
-  {"A: Monaco", "B: Kiev", "C: Rome", "D: Minsk"},
-  {"A: Aanraking", "B: Bakstenen", "C: Insecten", "D: Spoken"}
+  {"A: Aanraking", "B: Bakstenen", "C: Insecten", "D: Spoken"},
+  {"A: Monaco", "B: Kiev", "C: Rome", "D: Minsk"}
 };
 
-
+//correcte antwoorden: 0 = A, 1 = B, 2 = C, 3 = D
+byte correctAnswers[20] = {1,2,0,2,0,1,1,2,3,2,1,3,0,1,2,2,3,1,2,3};
 
 void setup()
 {
@@ -93,8 +94,14 @@ void setup()
 
 void loop()
 {
+  digitalWrite(ledLamp, HIGH);
+  digitalWrite(ledLamp, LOW);
+  
   if (rondeNummer == 0) {
-    lcd.clear(); lcd.print("Welkom!"); lcd.setCursor(0, 1); lcd.print("Wacht op start.."); 
+    lcd.clear(); lcd.print("Welkom speler "); lcd.print(deelnemerID); lcd.setCursor(0, 1); lcd.print("Wacht op start..");
+  }
+  else if (rondeNummer > 0) {
+    lcd.clear(); lcd.print("Wacht op"); lcd.setCursor(0, 1); lcd.print("ronde start..");
   }
   
   //begin nieuwe ronde zodra quizmaster arduino het nieuwe ronde nummer doorstuurt
@@ -112,7 +119,7 @@ void loop()
   //ronde info weergeven
   lcd.clear(); lcd.print("Ronde begint..");
   lcd.setCursor(0, 1); lcd.print("Ronde: "); lcd.print(rondeNummer);
-  delay(3000); //geef quizmaster arduino tijd om questionIndex door te sturen.
+  delay(2500); //geef quizmaster arduino tijd om questionIndex door te sturen.
   
   bezig = true; //speler kan toggle menu niet gebruiken
   
@@ -126,29 +133,8 @@ void loop()
 	beantwoordBuzzer(); //start functie om antwoord te geven op de buzzer vraag
   }
   
-  bezig = false; //speler kan toggle menu wel gebruiken
-
-  delay(6000); //wacht tot scores zijn toegekend en doorgestuurd 
-  digitalWrite(ledLamp, LOW); //led uit doen (ook als deze al uit is)
+  eindeRonde();
   
-  bezig = true; //speler kan toggle menu niet gebruiken
-  
-  //weergeef winnaar als spel is afgelopen
-  if (spelStatus == 0) {
-    rondeNummer = 0;
-    byte hoogsteScore = 0;
-    for (byte deelnemer = 0; deelnemer < 3; deelnemer++) {
-      int score = scoreArray[deelnemer];
-      if (score > hoogsteScore) {
-        hoogsteScore = scoreArray[deelnemer];
-        lcd.clear(); lcd.print("einde. winnaar:");
-        int winnaar = deelnemer + 1;
-        lcd.setCursor(0, 1); lcd.print("deelnemer "); lcd.print(winnaar);
-      }
-    }
-    delay(5000); //winnaar 5 seconden weergeven
-  }
-
 }
 
 
@@ -161,12 +147,26 @@ void beantwoordMeerkeuze()
   //laat gebruiker door de antwoord mogelijkheden scrollen met buttons.
   //printIndex 0 = antwoord A, printIndex 1 = antwoord B, enzovoorts.
   printIndex = 0;
+  int countdown = 9;
+  int looptime = millis();
+  int loopstart = millis();
+  int currenttime = millis();
   lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
   lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
   boolean selected = false;
-  while (!selected) { //wacht tot gebruiker een definitieve keuze maakt
+  while (!selected && currenttime - loopstart < 10000) { //wacht tot gebruiker een definitieve keuze maakt
     boolean pressed = false;
-    while (!pressed) { //wacht tot gebruiker een button indrukt
+    while (!pressed && currenttime - loopstart < 10000) { //wacht tot gebruiker een button indrukt
+    
+      currenttime = millis();
+      if (currenttime - looptime > 1000) {
+        looptime = currenttime;
+        if (countdown > 0) {
+          countdown--;
+        }
+      }
+      lcd.setCursor(14, 0); lcd.print(countdown);
+      
       if (digitalRead(btnPrev) == HIGH) {
         if (printIndex > 0) {
           printIndex = printIndex -1; //ga naar vorige antwoord
@@ -183,12 +183,31 @@ void beantwoordMeerkeuze()
         pressed = true;
         selected = true; //het huidige antwoord wordt geselecteerd als definitief
       }
+      delay(50);
     }
-	//print het huidige antwoord:
-	lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
-	lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
-	delay(200); //delay voorkomt dubbele button klik
+    //print het huidige antwoord:
+    lcd.clear(); lcd.setCursor(0, 0); lcd.print("antwoord:"); 
+    lcd.setCursor(0, 1); lcd.print(antwoordenArray[questionIndex][printIndex]);
+    delay(200); //delay voorkomt dubbele button klik
   }
+  
+  bezig = false; //speler kan toggle menu wel gebruiken
+  currenttime = millis();
+  while (currenttime - loopstart < 16000) {
+    delay(200);
+    currenttime = millis();
+  }
+  bezig = true; //speler kan toggle menu wel gebruiken
+  
+  lcd.clear(); lcd.print("Uw antwoord was:");
+  if (printIndex == correctAnswers[questionIndex]) {
+    lcd.setCursor(0, 1); lcd.print("goed!");
+  }
+  else {
+    lcd.setCursor(0, 1); lcd.print("fout..");
+  }
+  delay(5000);
+  lcd.clear();
 }
 
 
@@ -203,18 +222,32 @@ void beantwoordBuzzer()
   //wacht op button press van gebruiker
   boolean pressed = false;
   int responseTimeEnd;
-  while (!pressed) {
+  int currentBuzzerTime = millis();
+  while (!pressed && currentBuzzerTime - responseTimeStart < 8000) {
+    currentBuzzerTime = millis();
     if ((digitalRead(btnPrev) == HIGH) || (digitalRead(btnNext) == HIGH) || (digitalRead(btnSelect) == HIGH) || (digitalRead(btnToggle) == HIGH)) {
       pressed = true;
       responseTimeEnd = millis(); //meet eind tijd
-      lcd.clear(); lcd.print("gedrukt!");
+    }
+    else if (currentBuzzerTime - responseTimeStart >= 8000) {
+      responseTimeEnd = millis();
     }
   }
+  lcd.clear(); lcd.print("gedrukt!");
   
-  int reactietijdInteger  = responseTimeEnd - responseTimeStart; //bereken reactietijd (integer)
+  int reactietijdInteger = responseTimeEnd - responseTimeStart; //bereken reactietijd (integer)
   reactietijdInteger = reactietijdInteger + 1000; //zorgt dat reactietijd minimaal 4 bytes heeft (om te versturen)
   String reactietijdString = String(reactietijdInteger); //sla integer op als string
   reactietijdString.toCharArray(reactietijd,4); //sla string op als character array met lengte 4 (bv '1740')
+  
+  bezig = false; //speler kan toggle menu wel gebruiken
+  currentBuzzerTime = millis();
+  while (currentBuzzerTime - responseTimeStart < 16000) {
+    delay(200);
+    currentBuzzerTime = millis();
+  }
+  bezig = true; //speler kan toggle menu wel gebruiken
+  lcd.clear();
 }
 
 
@@ -240,6 +273,7 @@ void ontvanger(int numBytes)
     Serial.println("\n ronde nummer: ");
     rondeNummer = Wire.read();
     Serial.println(rondeNummer);
+    Serial.println(millis());
   }
   
   else if (type == 3) { // gaat om ronde info
@@ -310,4 +344,37 @@ void toggleMenu()
 	        }
 	}
 	
+}
+
+
+//------- einde ronde:
+void eindeRonde() {
+  //koploper bepalen
+  Serial.println("\n einde ronde: ");
+  byte winnaar = 0;
+  byte score;
+  byte hoogsteScore = 0;
+  for (byte deelnemer = 0; deelnemer < 3; deelnemer++) {
+    score = scoreArray[deelnemer];
+    if (score >= hoogsteScore) {
+      hoogsteScore = score;
+      winnaar = deelnemer + 1;
+    }
+  }
+  
+  //weergeef winnaar als spel is afgelopen
+  if (spelStatus == 0) {
+    rondeNummer = 0;
+    lcd.clear(); lcd.print("einde. winnaar:");
+    lcd.setCursor(0, 1); lcd.print("deelnemer "); lcd.print(winnaar);
+    Serial.println("\n winnaar"); Serial.print(winnaar);
+    delay(5000); //winnaar 5 seconden weergeven
+  }
+  //weergeef koploper voor volgende ronde
+  else if (spelStatus == 1) {
+    lcd.clear(); lcd.print("Ronde afgelopen");
+    lcd.setCursor(0, 1); lcd.print("#1: speler "); lcd.print(winnaar);
+    Serial.println("\n winnaar"); Serial.print(winnaar);
+    delay(5000);
+  }
 }
