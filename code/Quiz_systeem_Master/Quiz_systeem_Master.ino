@@ -80,7 +80,7 @@ PROGMEM const char* questions[40] = {
 
 // Correct answers array for all questions
 const char* answers[40] = { "B", "C", "A", "C", "A", "B", "B", "C", "D", "C", "B", "D", "A", "B", "C", "C", "D", "B", "C", "D",
-	"Montuur", "Graphical User Interface", "Structured Query Language", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood",
+	"Montuur", "Graphical User Interface", "Structured Q Lang", "Ippon", "Amy Winehouse", "Leerkracht", "Alpha", "Rood",
 	"Rood, Geel en Blauw", "Maffia", "Google", "Rood", "Mexico", "Zeus", "Balboa", "Atoom", "2", "5", "Bamboe", "Blauwe Vinvis"};
 
 // Scores for the questions
@@ -150,7 +150,7 @@ void loop() {
 	lcd.setCursor(0, 0);
 	lcd.print("Hallo Quizmaster");
 	lcd.setCursor(0, 1);
-	lcd.print("Druk op start");
+	lcd.print("Druk op start...");
 	
 	// Start the game
 	boolean startGame = false;
@@ -381,7 +381,7 @@ void buzzerQuestion() {
 	lcd.setCursor(4, 1);
 	lcd.print(answers[questionIndex]);
 	
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 32; i++) {
 		// Scroll one position left
 		lcd.scrollDisplayLeft();
 		delay(275);
@@ -418,7 +418,7 @@ void multipleChoiceQuestion() {
 	lcd.setCursor(0, 0);
 	lcd.print("Antwoorden ");
 	lcd.setCursor(0, 1);
-	lcd.print("opvragen...");
+	lcd.print("verzamelen...");
 	delay(5000);
 	
 	handleResponse(1); // Request user input for buzzer gamemode
@@ -485,7 +485,7 @@ void displayQuestion(String question) {
 	
 	transmitQuestion(questionIndex); delay(100); // Send the questionIndex to the slaves (so they know what the response options are)
 	
-	for (int i = 0; i < 40; i++) {
+	for (int i = 0; i < 42; i++) {
 		// Scroll one position left
 		lcd.scrollDisplayLeft();
 		delay(275);
@@ -626,6 +626,10 @@ void handleResponse(byte gamemodeID) {
 				}
 		
 				responseTime[device] = time;
+				
+				Serial.println("DEBUG: Response time from participants ");
+				Serial.print(responseTime[device]);
+				
 				delay(200);
 				break;
 			}
